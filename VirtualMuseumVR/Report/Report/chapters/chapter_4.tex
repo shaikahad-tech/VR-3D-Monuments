@@ -1,0 +1,120 @@
+\chapter{Design and Methodology}
+
+This chapter presents the architectural design of the \textbf{Virtual Museum VR} system. The system has four major modules:
+
+\begin{itemize}
+\item Architecture and Environment Module --- procedural rooms, hallways and lighting.
+\item Monument Library Module --- runtime procedural geometry for twenty world heritage monuments.
+\item Multi-Path Navigation Module --- a typed graph of rooms and paths with routing and unlock logic.
+\item Cross-Platform Delivery Module --- Unity build for Meta Quest, Three.js build for the open web.
+\end{itemize}
+
+These modules are loosely coupled through a shared metadata schema and a static event bus, and each module is independently testable and replaceable.
+
+\section{System Design Overview}
+
+The overall data flow is: a single \texttt{RuntimeMuseumBootstrapper} component, dropped into an empty scene, builds the entire museum at runtime. It calls into the \texttt{MuseumArchitectureBuilder} to lay out rooms and hallways, then into the \texttt{WorldMonumentLibrary} to instantiate one procedural monument per pedestal, and finally into the \texttt{MultiPathNavigationSystem} to install the canonical path graph. Lighting is configured per room based on a theme enumeration, and the \texttt{MuseumHUD} subscribes to graph events so that the path picker UI updates whenever the visitor enters a new room.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Corridor_MainHall.png}
+\caption{System architecture of Virtual Museum VR.}
+\label{fig:system_architecture}
+\end{figure}
+
+The architecture is illustrated in Figure~\ref{fig:system_architecture}. The browser delivery follows the same logical structure: the \texttt{VirtualMuseum.html} script declares the room and edge tables, builds the rooms procedurally inside a \texttt{THREE.Group} per room, and runs an animation loop that performs collision-aware movement, room detection and HUD updates.
+
+\section{Room and Hallway Generation}
+
+The museum has fourteen rooms arranged on a roughly rectangular plan. Each room is a unit defined by a position, a size triple of width, depth and height, a wall colour and a theme enumeration that selects ambient lighting. Rooms are connected by edges in the navigation graph; each edge is rendered geometrically as a hallway floor between the two room centres. The choice to keep walls thin (zero point three metres) and ceilings low (between five and eight metres depending on theme) is deliberate: it both reproduces the cosy scale of a curated exhibition and confines the player camera to predictable volumes, which simplifies room detection and audio occlusion.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room3_ArchaeologicalShards.png}
+\caption{Top-down floor plan of the museum showing the fourteen rooms and the connecting paths.}
+\label{fig:floorplan}
+\end{figure}
+
+The architecture builder also emits four pedestals per room arranged in a circle around the room centre. Each pedestal is a stack of three primitives --- a cylindrical column, a flat top disc and a glowing ring --- with the ring colour driven by the room theme.
+
+\section{Monument Library Design}
+
+The monument library was designed against three constraints. First, every monument must be recognisable from its silhouette alone, so a visitor can identify it from across the room. Second, the geometry budget must be modest because all twenty are visible at once from the central corridor and the experience targets seventy-two hertz on Meta Quest 2. Third, the library must be entirely runtime: no FBX, no OBJ, no asset bundle, no editor dependency. This guarantees that the project compiles and runs even on a freshly checked-out machine.
+
+The constraints suggested a primitive-composition approach. Each monument is a \texttt{GameObject} hierarchy whose leaves are \texttt{PrimitiveType} cubes, spheres and cylinders, parameterised, scaled and rotated to approximate the real geometry. The library exposes a single \texttt{Build} entry point that takes a \texttt{WorldMonument} enumeration and returns the constructed root. Twenty builders are implemented, each in approximately twenty to fifty lines of C\#, ranging from the four-cylinder Stonehenge ring to the fifty-primitive Taj Mahal with its plinth, four iwans, four chhatris, four minarets, central onion dome and reflecting pool.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room5_IndianHeritage.png}
+\caption{Procedural monument silhouettes: Taj Mahal, Colosseum, Stonehenge, Eiffel Tower, Christ the Redeemer, Petra Treasury, Moai, Pisa Tower.}
+\label{fig:monuments}
+\end{figure}
+
+\section{Multi-Path Navigation Graph}
+
+The traditional museum corridor is replaced by a fully connected graph $G = (V,E)$ where $V$ is the set of room nodes and $E$ is the set of typed edges. An edge carries an identifier, a source and target node, a bidirectional flag, a theme, a locomotion mode (walking, teleport, glide or floating), an optional narration cue, an optional unlock event identifier, and a length in metres.
+
+The default museum graph is installed by \texttt{InstallDefaultMuseumGraph()}. It contains nineteen edges covering: the entry from the grand entrance to the main corridor, branches from the main corridor to each of the five themed rooms, an east-wing extension into the Roman and Greek halls, sub-rooms inside the Indian hall, the floating-locomotion edge to the sky observatory, two cross-room shortcuts that bypass the corridor, and two locked edges leading to a hidden treasury that requires a key dropped in the archaeological shards room.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room2_PragueMonuments.png}
+\caption{Path graph visualisation. Nodes are rooms; edges are paths. Dashed edges are locked.}
+\label{fig:graph}
+\end{figure}
+
+Routing is performed with Dijkstra's algorithm over the edge length field, which lets the guided tour controller compute the shortest path from the visitor's current location to any chosen exhibit. The same routine is used by the path picker UI to greylist locked exits and to draw the minimap.
+
+\section{Comfort Locomotion Methodology}
+
+VR locomotion has been the largest single source of user-comfort regressions in early VR. The system implements three providers and exposes them through the per-user \texttt{ComfortSettings} ScriptableObject:
+
+\begin{itemize}
+\item \textbf{Arc teleport.} The default. Press the thumbstick forward and a parabolic arc lands on a \texttt{TeleportationAnchor}. No vestibular conflict.
+\item \textbf{Continuous movement.} For users that prefer flow. Speed is capped at three metres per second; the camera applies a vignette tunnel during motion to reduce peripheral flow.
+\item \textbf{Snap turn.} For users that find smooth rotation nauseating. Thirty-degree increments by default.
+\end{itemize}
+
+The \texttt{ContinuousMovementProvider} and \texttt{SnapTurnProvider} are thin wrappers around the XR Interaction Toolkit's defaults; the museum-specific value they add is the \texttt{MuseumTeleportManager} which builds teleport anchors automatically at every pedestal so that the visitor can leap directly to any exhibit.
+
+\section{Cross-Platform Delivery Methodology}
+
+The same logical museum exists in two implementations:
+
+\begin{itemize}
+\item \textbf{Unity build.} 2022.3 LTS, URP, XR Interaction Toolkit 3.0+, OpenXR Plugin 1.8+. Targets the Meta Quest 2, 3 and Pro through Android. Run from the editor with the Quest in Link mode for development; build through \texttt{File\,>\,Build Settings\,>\,Android}.
+\item \textbf{Web build.} A single self-contained \texttt{VirtualMuseum.html} with a Three.js import map. Opens by double-clicking. Detects WebXR availability and shows a button that enters immersive mode. Falls back to keyboard-and-mouse first-person navigation otherwise.
+\end{itemize}
+
+Both builds consume the same monument metadata --- title, era, location, country, era, polygon counts, acquisition method, narration clip --- and present it through a shared info-panel design. The result is that an exhibit authored once is rendered consistently regardless of the visitor's hardware.
+
+\section{Lighting and Audio Methodology}
+
+Each room is assigned a \texttt{PathTheme} (Default, Ancient, Modern, Mystical, Industrial or Reflective). The theme drives ambient colour, fog colour, and the colour of the room's key point light. Themes also feed the \texttt{AmbientAudioManager}, which crossfades between ambient loops as the visitor crosses room boundaries. The result is that movement between rooms is perceptible not just visually but acoustically, which strengthens the sense of place.
+
+\section{Module Summary}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|p{4cm}|p{6.5cm}|p{3.5cm}|}
+\hline
+\textbf{Module} & \textbf{Functionality} & \textbf{Implementation} \\
+\hline
+Architecture Builder & Room and hallway geometry & \texttt{MuseumArchitectureBuilder.cs} \\
+\hline
+Monument Library & Twenty procedural monuments & \texttt{WorldMonumentLibrary.cs} \\
+\hline
+Path Graph & Typed graph + Dijkstra routing & \texttt{MultiPathNavigationSystem.cs} \\
+\hline
+Bootstrapper & End-to-end runtime build & \texttt{RuntimeMuseumBootstrapper.cs} \\
+\hline
+Comfort Locomotion & Teleport, snap, continuous & \texttt{*Provider.cs} files \\
+\hline
+Web Port & Three.js immersive build & \texttt{VirtualMuseum.html} \\
+\hline
+\end{tabular}
+\caption{Major design modules and their implementing files.}
+\label{tab:design_modules}
+\end{table}

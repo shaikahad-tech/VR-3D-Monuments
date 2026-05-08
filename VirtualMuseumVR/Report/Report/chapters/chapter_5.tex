@@ -1,0 +1,167 @@
+\chapter{Implementation}
+
+This chapter walks through the implementation of the \textbf{Virtual Museum VR} system in two engines. The Unity client is written in C\,9.0 against Unity 2022.3 LTS, the XR Interaction Toolkit and the Universal Render Pipeline. The web client is written in modern JavaScript using ES modules, Three.js r160 and the WebXR Device API.
+
+\section{Implementation Overview}
+
+The implementation comprises five pipelines that mirror the design modules of Chapter~4:
+
+\begin{itemize}
+\item Architecture build pipeline (rooms, hallways, lighting).
+\item Monument build pipeline (procedural geometry, materials).
+\item Navigation pipeline (graph construction, routing, room detection).
+\item Interaction pipeline (grab, inspect, gaze, locomotion).
+\item Cross-platform delivery pipeline (Unity build, Three.js build).
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Corridor_MainHall.png}
+\caption{Project folder structure under \texttt{Assets/\_Project} and the root web build.}
+\label{fig:folders}
+\end{figure}
+
+\section{Architecture Build Pipeline}
+
+The runtime architecture is built by \texttt{RuntimeMuseumBootstrapper}, attached to a single empty GameObject. Its \texttt{Awake()} method calls \texttt{BuildArchitecture()}, \texttt{PopulateMonuments()}, \texttt{BuildPathGraph()} and \texttt{SetupLighting()} in sequence. Each room is constructed by \texttt{MakeRoom()}, which creates a floor, ceiling and four walls from primitive cubes and adds a key point light. Rooms are positioned on the world plane according to the canonical layout used by the path graph.
+
+\begin{lstlisting}[language={[Sharp]C},caption={Per-room construction in \texttt{RuntimeMuseumBootstrapper.MakeRoom()}.}]
+private GameObject MakeRoom(string id, Vector3 center, float w, float d, float h, Color wall) {
+    var room = new GameObject($"Room_{id}");
+    room.transform.SetParent(transform, false);
+    room.transform.localPosition = center;
+
+    Prim(PrimitiveType.Cube, room.transform, new Vector3(0, 0.05f, 0),
+         new Vector3(w, 0.1f, d), default, FloorMat());
+    // four walls + ceiling + pedestals
+    for (int i = 0; i < pedestalsPerRoom; i++) {
+        float ang = i * (360f / pedestalsPerRoom);
+        Vector3 p = Quaternion.Euler(0, ang, 0) * Vector3.forward
+                  * Mathf.Min(w, d) * 0.30f;
+        BuildPedestal(room.transform, p, $"Pedestal_{i}");
+    }
+    return room;
+}
+\end{lstlisting}
+
+\section{Monument Build Pipeline}
+
+\texttt{WorldMonumentLibrary.Build()} dispatches on the \texttt{WorldMonument} enumeration and calls one of twenty private builders. Each builder composes primitives parented to a single root \texttt{GameObject}, applies a shared physically based material, and returns the root.
+
+\begin{lstlisting}[language={[Sharp]C},caption={The Stonehenge builder is small but representative.}]
+private static void BuildStonehenge(GameObject root, Material mat) {
+    var t = root.transform;
+    int sarsen = 16; float r = 6f;
+    for (int i = 0; i < sarsen; i++) {
+        float ang = i * (360f / sarsen);
+        Vector3 dir = Quaternion.Euler(0, ang, 0) * Vector3.forward;
+        Prim(PrimitiveType.Cube, t, dir * r + new Vector3(0, 2, 0),
+             new Vector3(1.4f, 4, 0.9f), new Vector3(0, ang, 0));
+        if (i % 2 == 0) {
+            float midAng = ang + (180f / sarsen);
+            Vector3 midDir = Quaternion.Euler(0, midAng, 0) * Vector3.forward;
+            Prim(PrimitiveType.Cube, t, midDir * r + new Vector3(0, 4.3f, 0),
+                 new Vector3(2.4f, 0.5f, 0.9f), new Vector3(0, midAng, 0));
+        }
+    }
+}
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room5_IndianHeritage.png}
+\caption{Procedural monuments in the Indian hall (Taj Mahal, Qutub Minar, Hampi Chariot, Konark Temple).}
+\label{fig:indian_hall}
+\end{figure}
+
+\subsection{Material Choice}
+
+Each builder receives a default material whose colour is taken from the \texttt{stoneColor} field of the catalog entry. Materials are constructed against the URP Lit shader on Unity, and against \texttt{MeshStandardMaterial} on Three.js, with roughness around 0.6--0.8 for stone surfaces and 0.3--0.4 for marble. The Eiffel Tower receives a slightly metallic value of 0.4 to suggest wrought iron; the Statue of Liberty's copper material has a low metallic value to suggest oxidised copper rather than a polished surface.
+
+\subsection{The MonumentSpawner Component}
+
+\texttt{MonumentSpawner} sits on each pedestal and, in \texttt{Start()}, calls into the library. It then wraps the result with a single bounding-box \texttt{BoxCollider}, attaches a kinematic \texttt{Rigidbody}, and adds a \texttt{MonumentGrabInteractable} so that the user can pick the monument up and rotate it. The \texttt{autoRotate} flag drives a slow yaw rotation while the monument sits idle on the pedestal, which both attracts attention and lets the visitor see all sides without walking around it.
+
+\section{Navigation Pipeline}
+
+The path graph is built once in \texttt{InstallDefaultMuseumGraph()}. Nodes are added via \texttt{AddNode()}; edges via \texttt{AddEdge()}. The structure is held in two parallel lists (for serialisation) plus a dictionary index for O(1) lookup. \texttt{ShortestPath()} runs Dijkstra over the edge length field. \texttt{TryTraverse(edgeId)} validates that the edge starts at the current node and is not locked, then calls \texttt{EnterNode()} on the target.
+
+\begin{lstlisting}[language={[Sharp]C},caption={The shortest-path implementation.}]
+public List<string> ShortestPath(string fromId, string toId) {
+    var dist = new Dictionary<string, float>();
+    var prev = new Dictionary<string, string>();
+    var queue = new List<string>();
+    foreach (var n in nodes) { dist[n.nodeId] = float.PositiveInfinity; queue.Add(n.nodeId); }
+    dist[fromId] = 0f;
+
+    while (queue.Count > 0) {
+        queue.Sort((a, b) => dist[a].CompareTo(dist[b]));
+        string u = queue[0]; queue.RemoveAt(0);
+        if (u == toId) break;
+        foreach (var e in GetOutgoing(u)) {
+            string v = e.fromNodeId == u ? e.toNodeId : e.fromNodeId;
+            float alt = dist[u] + Mathf.Max(0.5f, e.lengthMeters);
+            if (alt < dist[v]) { dist[v] = alt; prev[v] = u; }
+        }
+    }
+    // trace back
+    var path = new List<string>();
+    string cur = toId;
+    while (cur != fromId) { path.Add(cur); cur = prev[cur]; }
+    path.Add(fromId); path.Reverse();
+    return path;
+}
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room4_AerialPhotogrammetry.png}
+\caption{Path picker UI showing branching exits from the main corridor.}
+\label{fig:pathpicker}
+\end{figure}
+
+\section{Interaction Pipeline}
+
+The interaction pipeline plays out in three layers. The \texttt{MonumentGrabInteractable} layer extends \texttt{XRGrabInteractable} and adds inspection-mode rotation snap-back. The \texttt{ExhibitTriggerZone} layer detects player proximity and fades in the wrist-mounted info panel. The \texttt{GazeInteractionManager} layer raycasts forward from the head and highlights any monument the visitor is looking at, which gives passive feedback without controller input.
+
+\section{Cross-Platform Delivery: Web Build}
+
+The web build is a single self-contained \texttt{VirtualMuseum.html} that uses an import map to load Three.js from a content delivery network. All twenty monument builders are reimplemented in JavaScript using identical primitive composition; the same room and edge tables drive scene construction; the same metadata schema drives the info card. WebXR is wired up through \texttt{renderer.xr.enabled = true} and an \textbf{Enter VR} button that becomes visible when an immersive session is supported. Keyboard-and-mouse controls fall back automatically: WASD walks, mouse looks, F inspects the nearest monument, and digits one through nine pick paths.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room1_NahumShrine_Iraq.png}
+\caption{Web build running in Chrome desktop. Top-left HUD, top-right legend, bottom-centre path picker, bottom-right minimap.}
+\label{fig:webbuild}
+\end{figure}
+
+\section{Implementation Module Table}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|p{4cm}|p{6cm}|p{4cm}|}
+\hline
+\textbf{Module} & \textbf{Functionality} & \textbf{Technology} \\
+\hline
+Bootstrapper & Builds entire scene at runtime & Unity, C\# \\
+\hline
+Architecture & Rooms, hallways, lighting & Primitive composition \\
+\hline
+Monument Library & Twenty procedural builders & C\# / JavaScript \\
+\hline
+Path Graph & Branching navigation & Custom typed graph \\
+\hline
+Interaction & Grab, inspect, gaze & XR Interaction Toolkit \\
+\hline
+Locomotion & Teleport, snap, continuous & XR Interaction Toolkit \\
+\hline
+Web Build & Browser delivery & Three.js + WebXR \\
+\hline
+HUD & Info panel, picker, map & Unity UGUI / DOM \\
+\hline
+\end{tabular}
+\caption{Implementation modules and the technology used for each.}
+\label{tab:impl_modules}
+\end{table}

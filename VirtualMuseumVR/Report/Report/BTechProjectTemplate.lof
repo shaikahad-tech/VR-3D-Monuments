@@ -1,0 +1,35 @@
+\babel@toc {english}{}\relax 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Vision concept for Virtual Museum VR. The visitor enters the Grand Entrance and is presented with twenty world heritage monuments distributed across fourteen themed rooms.\relax }}{2}{figure.caption.10}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Comparative photograph of the original Konark Sun Temple alongside the procedural reconstruction inside the museum.\relax }}{4}{figure.caption.11}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Photograph of the team working on the Virtual Museum project.\relax }}{7}{figure.caption.12}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Reference figure from Pavelka and Raeva (2019) showing the original four-room corridor museum layout.\relax }}{10}{figure.caption.13}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Comparison of comfort locomotion modes. Left: arc teleport. Centre: continuous movement with peripheral vignette. Right: snap turn at thirty-degree increments.\relax }}{11}{figure.caption.14}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces System architecture of Virtual Museum VR.\relax }}{14}{figure.caption.15}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Top-down floor plan of the museum showing the fourteen rooms and the connecting paths.\relax }}{15}{figure.caption.16}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Procedural monument silhouettes: Taj Mahal, Colosseum, Stonehenge, Eiffel Tower, Christ the Redeemer, Petra Treasury, Moai, Pisa Tower.\relax }}{16}{figure.caption.17}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Path graph visualisation. Nodes are rooms; edges are paths. Dashed edges are locked.\relax }}{17}{figure.caption.18}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Project folder structure under \texttt {Assets/\_Project} and the root web build.\relax }}{20}{figure.caption.20}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Procedural monuments in the Indian hall (Taj Mahal, Qutub Minar, Hampi Chariot, Konark Temple).\relax }}{21}{figure.caption.21}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Path picker UI showing branching exits from the main corridor.\relax }}{23}{figure.caption.22}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Web build running in Chrome desktop. Top-left HUD, top-right legend, bottom-centre path picker, bottom-right minimap.\relax }}{24}{figure.caption.23}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Meta Quest headset with Touch controllers, used as the primary VR target device.\relax }}{27}{figure.caption.25}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Unity Editor showing the Virtual Museum scene with the runtime bootstrapper.\relax }}{29}{figure.caption.26}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Title screen of the web build, asking the visitor to enter the museum.\relax }}{32}{figure.caption.28}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Indian Architecture Hall in the web build, showing four monuments on pedestals.\relax }}{33}{figure.caption.29}%
+\contentsline {figure}{\numberline {7.3}{\ignorespaces Petra Treasury (left) and Stonehenge (right) at runtime under warm Ancient-theme lighting.\relax }}{34}{figure.caption.30}%
+\contentsline {figure}{\numberline {7.4}{\ignorespaces Frame-time graph captured by the in-engine profiler over a sixty-second corridor walk.\relax }}{35}{figure.caption.32}%
+\contentsline {figure}{\numberline {7.5}{\ignorespaces Heatmap of visited rooms aggregated over eight user sessions.\relax }}{36}{figure.caption.33}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Monument silhouette grid: all twenty procedural monuments rendered side by side. Insert montage here.\relax }}{43}{figure.caption.36}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {D.1}{\ignorespaces Setup Wizard window inside the Unity Editor. Insert screenshot here.\relax }}{49}{figure.caption.38}%

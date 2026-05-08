@@ -1,0 +1,130 @@
+\chapter{Hardware and Software Tools Used}
+
+This chapter enumerates the hardware and software tools used to build, run and test \textbf{Virtual Museum VR}. The project deliberately keeps its dependency surface narrow so that anyone with an off-the-shelf VR headset and a recent web browser can reproduce the environment.
+
+\section{Hardware Requirements}
+
+The project is intentionally accessible to VR consumers --- not specialists --- so the hardware list is short.
+
+\subsection*{1. Meta Quest 2, 3 or Pro Headset}
+
+\begin{itemize}
+\item Standalone six-degree-of-freedom VR head-mounted display
+\item Snapdragon XR2 / XR2 Gen 2 mobile graphics processor
+\item Inside-out optical tracking, no external sensors required
+\item Dual six-degree-of-freedom Touch controllers
+\item Targeted refresh: 72\,Hz on Quest 2, 90\,Hz or 120\,Hz on Quest 3
+\end{itemize}
+
+\subsection*{2. Development Workstation}
+
+\begin{itemize}
+\item Modern x86\_64 CPU, 16\,GB or more RAM
+\item Discrete GPU with at least 4\,GB VRAM for editor playmode and Quest Link
+\item USB-C cable (3.0 or 3.1) for Oculus Link development testing
+\item Wired or wireless network capable of Air Link if cable is undesirable
+\end{itemize}
+
+\subsection*{3. Web Build Target}
+
+\begin{itemize}
+\item Any device running a current browser with WebGL 2 and (optionally) WebXR
+\item Tested on Chrome, Edge and Firefox on macOS, Windows and Quest Browser
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room2_PragueMonuments.png}
+\caption{Meta Quest headset with Touch controllers, used as the primary VR target device.}
+\label{fig:quest}
+\end{figure}
+
+\section{Software Tools Used}
+
+\subsection{Unity 2022.3 LTS}
+
+The primary development environment. Unity 2022.3 LTS is the version of choice because its support window covers the project lifetime, the URP and XR Interaction Toolkit have settled APIs, and Meta Quest support through OpenXR is officially supported.
+
+\begin{itemize}
+\item Universal Render Pipeline 14.x for physically based rendering
+\item XR Interaction Toolkit 3.0+ for grab, teleport and gaze
+\item OpenXR Plugin 1.8+ for Meta Quest target
+\item TextMeshPro for HUD and info panel rendering
+\item Burst and Mathematics for performance-critical hot paths
+\end{itemize}
+
+\subsection{C\# 9.0}
+
+Unity script language. Used for all gameplay code, runtime mesh generation, navigation logic and editor tooling. The project's C\# spans the namespaces \texttt{VirtualMuseumVR.Core}, \texttt{.Environment}, \texttt{.Interaction}, \texttt{.Locomotion}, \texttt{.UI}, \texttt{.Audio}, \texttt{.Optimization}, \texttt{.Data} and \texttt{.Editor}.
+
+\subsection{Three.js r160}
+
+The browser delivery is built on Three.js, the de facto WebGL scene-graph library. The library is loaded via a CDN through an ECMAScript import map, so the deliverable remains a single HTML file with no build step.
+
+\subsection{WebXR Device API}
+
+Provides immersive head tracking in the browser. Detected at runtime; the build degrades gracefully to keyboard and mouse if the API is not present.
+
+\subsection{Visual Studio Code}
+
+Primary editor for both C\# and JavaScript work. Used with the Unity Tools, OmniSharp and ESLint extensions.
+
+\subsection{Git and GitHub}
+
+Source control. Each module is independently versioned. The project uses a single-branch trunk-based development model.
+
+\subsection{Blender (Optional Asset Pipeline)}
+
+Used to import, decimate and re-export photogrammetric meshes when they become available, before Unity's \texttt{ModelImportProcessor} consumes them.
+
+\subsection{Agisoft Metashape (Reference Pipeline)}
+
+Documented in \texttt{Documentation/PHOTOGRAMMETRY\_PIPELINE.md} as the reference photogrammetry toolchain, but not strictly required because the procedural library produces complete monuments without it.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room3_ArchaeologicalShards.png}
+\caption{Unity Editor showing the Virtual Museum scene with the runtime bootstrapper.}
+\label{fig:unityeditor}
+\end{figure}
+
+\section{Software Module Summary}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|p{4cm}|p{7cm}|p{3cm}|}
+\hline
+\textbf{Tool} & \textbf{Purpose} & \textbf{Type} \\
+\hline
+Meta Quest 2/3/Pro & Target VR hardware & Hardware \\
+\hline
+Touch Controllers & Hand tracking and input & Hardware \\
+\hline
+Workstation + GPU & Editor and Quest Link development & Hardware \\
+\hline
+Unity 2022.3 LTS & Real-time engine & Software \\
+\hline
+Universal Render Pipeline & Physically based rendering & Software \\
+\hline
+XR Interaction Toolkit 3.0+ & Grab, teleport, gaze & Software \\
+\hline
+OpenXR Plugin 1.8+ & Meta Quest target binding & Software \\
+\hline
+Three.js r160 & Browser scene graph & Software \\
+\hline
+WebXR Device API & Browser immersive head tracking & Software \\
+\hline
+Visual Studio Code & Code editor & Software \\
+\hline
+Git / GitHub & Source control & Software \\
+\hline
+Blender 4.x & Asset preparation & Software (optional) \\
+\hline
+Agisoft Metashape & Photogrammetry reference & Software (optional) \\
+\hline
+\end{tabular}
+\caption{Hardware and software tools used in Virtual Museum VR.}
+\label{tab:tools}
+\end{table}

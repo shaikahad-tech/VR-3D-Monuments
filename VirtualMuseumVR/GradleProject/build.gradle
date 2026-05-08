@@ -1,0 +1,28 @@
+// Top-level build.gradle
+// Virtual Museum VR — Gradle Build Configuration
+// Works on the Gradle project exported by Unity (Phase 2 build)
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            // Unity exports .aar files into this directory
+            dirs "${rootProject.projectDir}/unityLibrary/libs"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

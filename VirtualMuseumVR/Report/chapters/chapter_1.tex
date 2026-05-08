@@ -1,0 +1,61 @@
+\chapter{Introduction}
+
+\section{Introduction}
+
+Cultural heritage is a finite resource. Wars, environmental degradation, natural disasters and uncontrolled urban development have, in the last two decades alone, damaged or destroyed monuments at sites such as Palmyra, Bamiyan, Mosul and Ayodhya at a rate that has outpaced the capacity of physical conservation. Photogrammetry, laser scanning and structure-from-motion techniques have given the heritage community a way to capture the geometry and surface appearance of these sites with millimetre-level fidelity. The natural next step --- presenting these digital artifacts to a general audience in a way that is both faithful and engaging --- is the domain of the virtual museum.
+
+This project, \textbf{Virtual Museum VR}, addresses that next step. We design and implement an end-to-end virtual museum that lets a visitor, wearing a Meta Quest headset or simply opening a webpage, walk between themed rooms, pick up monument models, rotate and inspect them, read curatorial information, and choose between branching paths through the exhibit. The work is anchored to the methodology proposed by Pavelka and Raeva\,\cite{pavelka2019} for photogrammetric virtual museums, and extends that methodology to (a) the multi-path topology required by an exhibition with twenty monuments rather than the original four, (b) the procedural reconstruction of monument geometry so that a working museum exists even without finished photogrammetry assets, and (c) the cross-platform deployment to both VR hardware and the open web from a shared content model.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Corridor_MainHall.png}
+\caption{Vision concept for Virtual Museum VR. The visitor enters the Grand Entrance and is presented with twenty world heritage monuments distributed across fourteen themed rooms.}
+\label{fig:vision}
+\end{figure}
+
+\section{Background Study}
+
+Heritage documentation has progressed from hand-measured drawings, through photographic surveys, to the dense point clouds and textured meshes produced by modern image-based reconstruction software such as Agisoft Metashape and RealityCapture. The data volumes are large --- a single ground-based scan of a temple facade can produce millions of triangles and gigabytes of texture --- and direct presentation in real-time interactive media is therefore not trivial. Pavelka and Raeva\,\cite{pavelka2019} proposed a four-room museum layout connected by a corridor, with per-room photogrammetry of progressively more challenging subjects: a Mesopotamian shrine, Czech stone monuments, archaeological shards and aerial drone scans.
+
+In parallel, real-time engines have matured. Unity 2022.3 LTS combined with the Universal Render Pipeline now supports physically based rendering on the Meta Quest 2 and 3 at the seventy-two and ninety hertz refresh rates that VR demands. The WebXR Device API has reached browser availability that lets a webpage place an immersive scene directly on the user's headset without an app store install, and Three.js exposes that capability through a stable JavaScript module. Combined with comfort locomotion practices distilled by Oculus and Valve, the toolchain for reproducing an interactive virtual museum is now within reach of a final-year project.
+
+The challenge that remains is not a tool problem but a content and architecture problem. How does one present twenty monuments without overwhelming the visitor? How does the visitor choose between paths? How does one keep an experience identical between the VR build, where the user is six feet tall and has hand controllers, and the web build, where the user has a keyboard and a mouse? These are the questions this project sets out to answer.
+
+\section{Problem Statement}
+
+Existing virtual museum projects, including the prototype described in Pavelka and Raeva\,\cite{pavelka2019}, suffer from three limitations:
+
+\begin{enumerate}
+\item \textbf{Linear topology.} Visitors are funneled through a hub-and-spoke corridor that visits each room once. There is no path choice and no replay value.
+\item \textbf{Asset dependency.} The build cannot run until a photogrammetry team has produced the meshes. A team without a drone fleet has no museum at all.
+\item \textbf{Single-platform delivery.} The experience is locked to one engine and one device class. A user without a headset is excluded.
+\end{enumerate}
+
+The Virtual Museum VR system answers each limitation in turn: a graph-based path system, a procedural monument library and a Unity-and-Three.js dual deliverable.
+
+\section{Objectives}
+
+The project is bound by the following measurable objectives:
+
+\begin{enumerate}
+\item Implement at least twenty procedural monument models that resemble the silhouettes of their real-world counterparts at moderate detail, suitable as placeholders or as the final exhibits in a small museum.
+\item Implement a multi-path navigation graph with at least fifteen edges including bidirectional, locked and shortcut paths.
+\item Deliver a Unity 2022.3 LTS project targeting the Meta Quest 2/3/Pro at seventy-two hertz with no dropped frames in the average case.
+\item Deliver an HTML/Three.js build of the same museum, openable on any modern browser without a server, with seamless WebXR entry for users that have a headset.
+\item Document a path from photogrammetric source data to runtime exhibit through an editor pipeline, so that the procedural placeholders may be swapped for real scans without code changes.
+\end{enumerate}
+
+\section{Scope of the Project}
+
+The scope is the design, implementation and validation of the museum software stack. It explicitly includes scene authoring, runtime architecture generation, monument geometry, navigation, interaction, lighting and the cross-platform deployment. It explicitly excludes the production of new photogrammetric scans (treated as imported assets), original musical scoring (treated as ambient loops), and any networking or multiplayer capability (left as future work).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room5_IndianHeritage.png}
+\caption{Comparative photograph of the original Konark Sun Temple alongside the procedural reconstruction inside the museum.}
+\label{fig:konark_compare}
+\end{figure}
+
+\section{Organization of the Report}
+
+Chapter~2 motivates the project by placing it inside the larger goals of an undergraduate engineering education and the public good of digital heritage. Chapter~3 surveys prior work in photogrammetric virtual museums, real-time engines and locomotion comfort. Chapter~4 sets out the system architecture, the path graph and the monument library design. Chapter~5 walks through the implementation in Unity C\# and JavaScript Three.js. Chapter~6 enumerates the hardware and software tools used. Chapter~7 reports performance numbers and qualitative observations from user testing. Chapter~8 concludes and lays out future work.

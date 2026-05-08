@@ -1,0 +1,11 @@
+\begin{spacing}{1.4}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{\texorpdfstring{\MakeUppercase{Abstract}}{Abstract}}
+
+In this project we propose \textbf{Virtual Museum VR}, an immersive cross-platform framework for the documentation, preservation and exploration of world heritage monuments. The system reproduces, in interactive form, the photogrammetric virtual-museum methodology described by Pavelka and Raeva (2019), and extends it with three contributions: a runtime procedural monument library that generates twenty geometry-rich heritage models without depending on imported high-poly photogrammetry assets; a multi-path navigation graph that replaces the traditional linear museum corridor with a fully connected room topology supporting branching, locked and shortcut paths; and a single-codebase deliverable that runs on Meta Quest 2/3/Pro through Unity 2022.3 LTS and the XR Interaction Toolkit, and equivalently runs in any WebXR-capable browser through a Three.js implementation.
+
+The Unity layer provides a complete VR experience built around fourteen themed rooms, twenty grab-and-rotate monument exhibits, room-aware lighting, ambient audio, gaze interaction, comfort locomotion (snap turn, continuous movement, and arc teleport) and a guided tour mode. The browser layer reproduces the same museum at one-to-one fidelity, parses the same path graph, and supports keyboard, mouse and WebXR head-mounted display input. Both layers consume the same canonical metadata describing each monument (era, location, polygon counts, acquisition method, lighting profile and narration cues), so curatorial content authored once is rendered consistently across hardware tiers.
+
+Performance was evaluated on a Meta Quest 2 and on a desktop Chrome build at 1080p. The Quest build held a steady 72\,Hz with all twenty monuments visible from the central corridor; the browser build maintained sixty frames per second under continuous walking. The result is a low-cost, scalable and pedagogically rich virtual heritage platform that bridges the gap between dedicated VR hardware and the open web, making cultural heritage accessible to any user with a browser, while preserving a true immersive head-tracked experience for users with VR equipment.
+
+\end{spacing}

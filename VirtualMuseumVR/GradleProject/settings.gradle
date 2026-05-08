@@ -1,0 +1,18 @@
+// settings.gradle
+// Virtual Museum VR
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "VirtualMuseumVR"
+
+// Unity exports two modules:
+//   launcher  — the Android app shell
+//   unityLibrary — the compiled Unity game logic
+include ':launcher'
+include ':unityLibrary'

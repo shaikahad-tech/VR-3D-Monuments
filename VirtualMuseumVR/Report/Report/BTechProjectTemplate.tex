@@ -1,0 +1,128 @@
+
+\input{preamble}
+%%
+\begin{document}
+%%
+%% **********************************
+%%
+\singlespacing
+%%
+\ttitle{Virtual Museum VR: An Immersive Web and Unity Framework for Photogrammetric Documentation and Multi-Path Exploration of World Heritage Monuments}
+
+\nnameone{Student Name 1}
+\nnametwo{Student Name 2}
+\nnamethree{Student Name 3}
+\nnamefour{Student Name 4}
+% \nnamefive{Student Name 5}
+
+\rregisternumberone{AP22110010001}
+\rregisternumbertwo{AP22110010002}
+\rregisternumberthree{AP22110010003}
+\rregisternumberfour{AP22110010004}
+% \rregisternumberfive{AP22110010005}
+
+
+\eemblem{figures/SRMAPLOGO}
+\ddept{Computer Science \& Engineering}
+\ccollege{SRM University-AP}
+\aaddresslinei{Neerukonda, Mangalgiri, Guntur}
+\aaddresslineii{Amaravati, Andhra Pradesh - 522 240}
+\ddate{May 2026}
+\gguide{Dr. Guide Name}
+\hhod{Dr. Murali Krishna Enduri}
+
+% \pprojectco{Prof. Coordinator 1}
+% \pprojectcoii{Prof. PG Professor}
+
+\input{titlepage}
+\input{declaration}
+\input{certificate}
+\input{acknowledgment}
+\input{abstract}
+
+\begin{spacing}{1.5}
+\tableofcontents
+\addcontentsline{toc}{chapter}{LIST OF TABLES}
+\listoftables
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\listoffigures
+
+\chapter*{ABBREVIATIONS}
+\addcontentsline{toc}{chapter}{ABBREVIATIONS}
+
+\begin{center}
+(Listed in alphabetical order)
+\begin{tabular}{p{0.2\textwidth}|p{0.8\textwidth}}
+\hline
+Abbreviation & Expansion \\
+\hline
+API   & Application Programming Interface \\
+DOM   & Document Object Model \\
+FPS   & Frames Per Second \\
+GLTF  & Graphics Library Transmission Format \\
+HMD   & Head-Mounted Display \\
+LOD   & Level Of Detail \\
+MR    & Mixed Reality \\
+PBR   & Physically Based Rendering \\
+SDK   & Software Development Kit \\
+SO    & ScriptableObject (Unity) \\
+URP   & Universal Render Pipeline \\
+UX    & User Experience \\
+VR    & Virtual Reality \\
+WebXR & Web Extended Reality \\
+XR    & Extended Reality \\
+\hline
+\end{tabular}
+\end{center}
+
+\chapter*{NOTATIONS}
+\addcontentsline{toc}{chapter}{NOTATIONS}
+
+\begin{center}
+(Listed in alphabetical order)
+\begin{tabular}{p{0.2\textwidth}|p{0.8\textwidth}}
+\hline
+Notation & Explanation \\
+\hline
+$N_{tri}$        & Triangle (polygon) count of a 3D model\\
+$R_{dec}$        & Decimation ratio after geometric simplification\\
+$T_{frame}$      & Per-frame render time (ms)\\
+$P$              & Set of path edges in the museum graph\\
+$V$              & Set of room nodes in the museum graph\\
+$d(u,v)$         & Edge length (in metres) between nodes $u$ and $v$\\
+\hline
+\multicolumn{2}{c}{Greek Symbols}\\
+\hline
+$\theta$         & Camera yaw (radians)\\
+$\phi$           & Camera pitch (radians)\\
+$\Delta t$       & Time step between frames (s)\\
+\hline
+\end{tabular}
+\end{center}
+
+\end{spacing}
+
+\newpage
+\pagenumbering{arabic}
+%%
+%% **********************************************************
+%%
+\input{chapters/chapter_1}
+\input{chapters/chapter_2}
+\input{chapters/chapter_3}
+\input{chapters/chapter_4}
+\input{chapters/chapter_5}
+\input{chapters/chapter_6}
+\input{chapters/chapter_7}
+\input{chapters/chapter_8}
+
+%%
+%% **********************************************************
+%%
+\input{references}
+
+\input{appendix}
+
+\input{publications}
+
+\end{document}

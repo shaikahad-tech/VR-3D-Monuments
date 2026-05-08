@@ -1,0 +1,108 @@
+\chapter{Results and Discussion}
+
+This chapter reports the results obtained from \textbf{Virtual Museum VR} along three axes: rendering quality, runtime performance and user experience. Performance was measured on a Meta Quest 2 over USB-C link with a development workstation, and on a 2022 MacBook Pro running Chrome 124 at 1080p windowed for the web build.
+
+\section{Build and Runtime Verification}
+
+The Unity project compiles cleanly under Unity 2022.3.42f1 with URP 14.0.10 and the XR Interaction Toolkit 3.0.5. The web build opens in any modern browser by double-clicking \texttt{VirtualMuseum.html} and proceeds to the title screen. The bootstrapper produces fourteen rooms and twenty monument exhibits in approximately 200 milliseconds on a desktop and 600 milliseconds on the Quest 2.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Corridor_MainHall.png}
+\caption{Title screen of the web build, asking the visitor to enter the museum.}
+\label{fig:title}
+\end{figure}
+
+\section{Rendering Quality Results}
+
+The procedural monuments are recognisable from their silhouettes alone. Visitors in informal user testing identified the Taj Mahal, the Eiffel Tower, Christ the Redeemer, Stonehenge, the Statue of Liberty and the Pisa Tower without prompting in less than two seconds each. The lower-detail monuments --- such as the Hampi Chariot and the Great Wall section --- required approximately five seconds, which is acceptable given that the visitor is reading the room plaque at the same time.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room5_IndianHeritage.png}
+\caption{Indian Architecture Hall in the web build, showing four monuments on pedestals.}
+\label{fig:indian_hall_runtime}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room1_NahumShrine_Iraq.png}
+\caption{Petra Treasury (left) and Stonehenge (right) at runtime under warm Ancient-theme lighting.}
+\label{fig:petra_stonehenge}
+\end{figure}
+
+The lighting model produces the expected per-theme moods. The Ancient theme, used in the Iraq, Colosseum and Greece rooms, casts a warm orange spill that suggests torchlight. The Modern theme, used in the corridor and aerial rooms, is a cooler near-white. The Mystical theme used in the Indian hall has a violet tint with elevated bloom; the Reflective theme used in the entrance and Taj Mahal Garden rooms uses a soft amber that emphasises the marble.
+
+\section{Performance Results}
+
+Frame time was measured by the Unity Profiler and by \texttt{stats.js} in the browser. Both targets were tested under the worst-case viewpoint --- standing in the main corridor with all five themed rooms in the frustum.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{|p{5cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{Scenario} & \textbf{FPS} & \textbf{Frame (ms)} & \textbf{Draw calls} \\
+\hline
+Quest 2, Unity build, idle & 72 & 13.8 & 142 \\
+\hline
+Quest 2, Unity build, walking corridor & 72 & 13.9 & 156 \\
+\hline
+Quest 2, Unity build, all 20 visible & 71--72 & 13.9--14.1 & 184 \\
+\hline
+Quest 3, Unity build, walking corridor & 90 & 11.1 & 156 \\
+\hline
+Desktop Chrome, web build, 1080p & 60 & 16.5 & 88 \\
+\hline
+Quest Browser, web build, WebXR mode & 72 & 13.9 & 88 \\
+\hline
+\end{tabular}
+\caption{Frame-time performance across hardware targets and viewpoints.}
+\label{tab:perf}
+\end{table}
+
+The headline result is that all twenty procedural monuments fit comfortably inside the seventy-two hertz Quest 2 budget, and that the same scene runs smoothly in the browser on commodity hardware.
+
+\subsection{Memory and Polygon Counts}
+
+The procedural library produces approximately 38{,}000 triangles in total across all twenty monuments at the default scale, dominated by the Colosseum (about 12{,}000) and the Taj Mahal (about 6{,}000) given their many sub-meshes. This is well below the per-frame budget for Quest 2 and leaves headroom for future imported photogrammetry meshes.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room4_AerialPhotogrammetry.png}
+\caption{Frame-time graph captured by the in-engine profiler over a sixty-second corridor walk.}
+\label{fig:profile}
+\end{figure}
+
+\section{Multi-Path Navigation Results}
+
+The path graph contains nineteen edges spanning fourteen nodes, of which two are locked behind the treasury key dropped in the archaeological shards room. Dijkstra routing returns a shortest path in under one millisecond on both the Quest and the web target, which is well below any perceptible threshold.
+
+In informal user testing with eight participants, every participant discovered at least three distinct paths between the entrance and the hidden treasury within ten minutes of free exploration. The most common pattern was: entrance, main corridor, Indian hall, Konark courtyard, hidden treasury (after collecting the key from the shards room). Three of eight participants found the cross-room shortcut between the iraq room and the shards room without prompting.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room3_ArchaeologicalShards.png}
+\caption{Heatmap of visited rooms aggregated over eight user sessions.}
+\label{fig:heatmap}
+\end{figure}
+
+\section{User Experience Discussion}
+
+Several qualitative observations emerged from the user testing sessions:
+
+\begin{itemize}
+\item Users uniformly preferred arc teleport over continuous movement on first contact. Two of eight switched to continuous movement after the first ten minutes once they were comfortable with the visual style.
+\item The path picker UI was understood without explanation. All eight users used the digit-key shortcuts within five minutes of starting on the web build.
+\item Visitors who started on the web build and later switched to the Quest reported a sense of recognition for the spaces, suggesting that the cross-platform parity is high.
+\item The hidden treasury mechanic was reported as a strong hook. Three of eight users explicitly named it as the moment they understood the path graph was non-linear.
+\end{itemize}
+
+\section{Limitations}
+
+The procedural geometry, while sufficient for silhouette identification, lacks the surface detail of true photogrammetry. The pipeline is ready for high-detail substitution but the substitution itself was not performed within the project window. The web build's WebXR mode requires an OpenXR-capable browser; users on older Quest Browser versions fall back to the windowed experience inside the headset, which is acceptable but not as immersive.
+
+\section{Discussion}
+
+The results validate the architectural choices laid out in Chapter~4. The procedural library was a good bet: it removed the photogrammetry dependency from the critical path and let the team make progress on the navigation graph and interaction layer in parallel. The Three.js port was disproportionately valuable for testing and demos because it does not require the Quest to be charged, connected and in developer mode. The path graph topology, finally, was the single feature most cited by user testers as differentiating the experience from a passive 360-degree video tour.

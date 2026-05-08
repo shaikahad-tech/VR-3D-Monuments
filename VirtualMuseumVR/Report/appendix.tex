@@ -1,0 +1,227 @@
+\appendix
+
+\chapter{Complete Monument Catalog}
+\addcontentsline{toc}{chapter}{\texorpdfstring{\MakeUppercase{Appendix A: Monument Catalog}}{Appendix A: Monument Catalog}}
+
+The full catalog of twenty procedural monuments shipped with the system is reproduced below. Every entry is a row in \texttt{WorldMonumentLibrary.\_catalog} and is rendered identically by the Unity and Three.js builds.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|p{3.4cm}|p{3.6cm}|p{3.0cm}|p{3.4cm}|}
+\hline
+\textbf{Identifier} & \textbf{Title} & \textbf{Era} & \textbf{Location} \\
+\hline
+TajMahal           & Taj Mahal                      & 17th C. (Mughal)         & Agra, India \\\hline
+QutubMinar         & Qutub Minar                    & 12th C. (Sultanate)      & Delhi, India \\\hline
+HampiChariot       & Stone Chariot, Hampi           & 16th C. (Vijayanagara)   & Hampi, India \\\hline
+KonarkSunTemple    & Konark Sun Temple              & 13th C. (Eastern Ganga)  & Odisha, India \\\hline
+AjantaCaves        & Ajanta Caves                   & 2nd C. BCE -- 5th C. CE  & Maharashtra, India \\\hline
+GreatPyramidGiza   & Great Pyramid of Giza          & c. 2560 BCE              & Giza, Egypt \\\hline
+Colosseum          & Roman Colosseum                & 80 CE                    & Rome, Italy \\\hline
+Stonehenge         & Stonehenge                     & c. 3000 BCE              & Wiltshire, England \\\hline
+Parthenon          & Parthenon                      & 447 BCE                  & Athens, Greece \\\hline
+EiffelTower        & Eiffel Tower                   & 1889 CE                  & Paris, France \\\hline
+ChristTheRedeemer  & Christ the Redeemer            & 1931 CE                  & Rio de Janeiro, Brazil \\\hline
+StatueOfLiberty    & Statue of Liberty              & 1886 CE                  & New York, USA \\\hline
+EasterIslandMoai   & Moai (Easter Island)           & 1250--1500 CE            & Rapa Nui, Chile \\\hline
+AngkorWat          & Angkor Wat                     & 12th C. (Khmer)          & Siem Reap, Cambodia \\\hline
+GreatWallSection   & Great Wall (section)           & 7th C. BCE -- 17th C. CE & Northern China \\\hline
+PetraTreasury      & Al-Khazneh, Petra              & 1st C. CE (Nabataean)    & Petra, Jordan \\\hline
+ChichenItza        & El Castillo, Chich\'en Itz\'a  & 9th--12th C. (Maya)      & Yucat\'an, Mexico \\\hline
+LeaningTowerPisa   & Leaning Tower of Pisa          & 1372 CE                  & Pisa, Italy \\\hline
+SydneyOperaHouse   & Sydney Opera House             & 1973 CE                  & Sydney, Australia \\\hline
+\end{tabular}
+\caption{Complete monument catalog with identifier, title, era and location.}
+\label{tab:catalog}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{8cm}\rule{0.85\textwidth}{0pt}}
+\caption{Monument silhouette grid: all twenty procedural monuments rendered side by side. Insert montage here.}
+\label{fig:montage}
+\end{figure}
+
+\chapter{Path Graph Edge Listing}
+\addcontentsline{toc}{chapter}{\texorpdfstring{\MakeUppercase{Appendix B: Path Graph}}{Appendix B: Path Graph}}
+
+The full set of path edges installed by \texttt{InstallDefaultMuseumGraph()} is listed below. Each edge has a unique identifier, a source node, a target node, an associated theme and a locomotion mode. Edges marked Locked require the visitor to first collect the Treasury Key from the Archaeological Shards room.
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{|p{4.0cm}|p{3.0cm}|p{3.0cm}|p{2.0cm}|p{1.5cm}|}
+\hline
+\textbf{Edge ID} & \textbf{From} & \textbf{To} & \textbf{Loco.} & \textbf{Locked} \\
+\hline
+e\_entrance\_main      & entrance         & main\_corridor     & Walking  & No \\\hline
+e\_main\_iraq          & main\_corridor   & iraq\_room         & Teleport & No \\\hline
+e\_main\_prague        & main\_corridor   & prague\_room       & Teleport & No \\\hline
+e\_main\_shards        & main\_corridor   & shards\_room       & Teleport & No \\\hline
+e\_main\_aerial        & main\_corridor   & aerial\_room       & Teleport & No \\\hline
+e\_main\_indian        & main\_corridor   & indian\_hall       & Teleport & No \\\hline
+e\_main\_east          & main\_corridor   & east\_corridor     & Walking  & No \\\hline
+e\_east\_colosseum     & east\_corridor   & colosseum\_room    & Teleport & No \\\hline
+e\_east\_greece        & east\_corridor   & greece\_room       & Teleport & No \\\hline
+e\_colosseum\_aqueduct & colosseum\_room  & roman\_aqueduct    & Walking  & No \\\hline
+e\_greece\_inner       & greece\_room     & parthenon\_inner   & Walking  & No \\\hline
+e\_aerial\_sky         & aerial\_room     & sky\_observatory   & Floating & No \\\hline
+e\_indian\_taj         & indian\_hall     & taj\_mahal\_garden & Walking  & No \\\hline
+e\_indian\_konark      & indian\_hall     & konark\_courtyard  & Walking  & No \\\hline
+e\_indian\_treasury    & indian\_hall     & hidden\_treasury   & Glide    & Yes \\\hline
+e\_shortcut\_iraq\_shards & iraq\_room    & shards\_room       & Walking  & No \\\hline
+e\_taj\_konark\_loop   & taj\_mahal\_garden & konark\_courtyard & Walking & No \\\hline
+e\_konark\_treasury    & konark\_courtyard & hidden\_treasury  & Walking  & Yes \\\hline
+e\_iraq\_aerial        & iraq\_room       & aerial\_room       & Walking  & No \\\hline
+\end{tabular}
+\caption{Complete path graph edge listing.}
+\label{tab:edges}
+\end{table}
+
+\chapter{Selected Source Listings}
+\addcontentsline{toc}{chapter}{\texorpdfstring{\MakeUppercase{Appendix C: Source Listings}}{Appendix C: Source Listings}}
+
+The following abbreviated source listings show the structural backbone of the system. The complete project comprises approximately ten thousand lines of code; only representative snippets are reproduced here.
+
+\section*{C.1 Monument Builder Dispatch}
+
+\begin{lstlisting}[language={[Sharp]C}]
+public static GameObject Build(WorldMonument m, Material mat, Transform parent) {
+    var def = GetDefinition(m);
+    var root = new GameObject($"Monument_{m}");
+    if (parent != null) root.transform.SetParent(parent, false);
+    var material = mat ?? CreateDefaultMaterial(def.stoneColor);
+
+    switch (m) {
+        case WorldMonument.TajMahal:          BuildTajMahal(root, material); break;
+        case WorldMonument.Colosseum:         BuildColosseum(root, material); break;
+        case WorldMonument.Stonehenge:        BuildStonehenge(root, material); break;
+        case WorldMonument.Parthenon:         BuildParthenon(root, material); break;
+        case WorldMonument.EiffelTower:       BuildEiffelTower(root, material); break;
+        case WorldMonument.ChristTheRedeemer: BuildChristTheRedeemer(root, material); break;
+        case WorldMonument.StatueOfLiberty:   BuildStatueOfLiberty(root, material); break;
+        case WorldMonument.EasterIslandMoai:  BuildMoai(root, material); break;
+        case WorldMonument.PetraTreasury:     BuildPetraTreasury(root, material); break;
+        // ... twelve more monuments ...
+    }
+    foreach (var r in root.GetComponentsInChildren<MeshRenderer>())
+        if (r.sharedMaterial == null) r.sharedMaterial = material;
+    root.transform.localScale = Vector3.one * 0.05f * def.scaleMultiplier;
+    return root;
+}
+\end{lstlisting}
+
+\section*{C.2 Path Edge Definition}
+
+\begin{lstlisting}[language={[Sharp]C}]
+[Serializable]
+public class PathEdge {
+    public string edgeId;
+    public string fromNodeId;
+    public string toNodeId;
+    public bool bidirectional = true;
+    public PathTheme theme = PathTheme.Default;
+    public LocomotionMode locomotion = LocomotionMode.Teleport;
+    [TextArea(1, 3)] public string narratorCue;
+    public bool requiresUnlock;
+    public string unlockEventId;
+    public float lengthMeters = 4f;
+}
+\end{lstlisting}
+
+\section*{C.3 Three.js Animation Loop}
+
+\begin{lstlisting}[language=JavaScript]
+renderer.setAnimationLoop(() => {
+    const dt = Math.min(clock.getDelta(), 0.05);
+    update(dt);              // movement, collisions, room detection
+    renderer.render(scene, camera);
+});
+
+function update(dt) {
+    const speed = (keys.ShiftLeft || keys.ShiftRight) ? player.runSpeed : player.speed;
+    const fwd   = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+    const right = new THREE.Vector3( Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+    const move  = new THREE.Vector3();
+    if (keys.KeyW) move.add(fwd);
+    if (keys.KeyS) move.sub(fwd);
+    if (keys.KeyD) move.add(right);
+    if (keys.KeyA) move.sub(right);
+    if (move.lengthSq() > 0) move.normalize().multiplyScalar(speed * dt);
+
+    const next = player.pos.clone().add(new THREE.Vector3(move.x, 0, 0));
+    if (!collides(next)) player.pos.x = next.x;
+    const next2 = player.pos.clone().add(new THREE.Vector3(0, 0, move.z));
+    if (!collides(next2)) player.pos.z = next2.z;
+
+    camera.position.copy(player.pos);
+    camera.rotation.set(player.pitch, player.yaw, 0, 'YXZ');
+    detectRoom();
+}
+\end{lstlisting}
+
+\section*{C.4 Default Path Graph Installation}
+
+\begin{lstlisting}[language={[Sharp]C}]
+public void InstallDefaultMuseumGraph() {
+    Clear();
+    AddN("entrance",        "Grand Entrance",       MuseumRoom.Corridor);
+    AddN("main_corridor",   "Main Corridor",        MuseumRoom.Corridor);
+    AddN("iraq_room",       "Iraq -- Nahum Shrine", MuseumRoom.IraqSection);
+    AddN("indian_hall",     "Indian Hall",          MuseumRoom.IndianArchitecture);
+    AddN("hidden_treasury", "Hidden Treasury",      MuseumRoom.IndianArchitecture);
+    // ... remaining nodes ...
+
+    AddE("e_entrance_main",   "entrance",      "main_corridor",   PathTheme.Reflective, LocomotionMode.Walking, 6f);
+    AddE("e_main_indian",     "main_corridor", "indian_hall",     PathTheme.Mystical,   LocomotionMode.Teleport, 5f);
+    AddE("e_indian_treasury", "indian_hall",   "hidden_treasury", PathTheme.Mystical,   LocomotionMode.Glide, 4f, true, "found_key");
+    // ... remaining edges ...
+}
+\end{lstlisting}
+
+\chapter{Build and Run Instructions}
+\addcontentsline{toc}{chapter}{\texorpdfstring{\MakeUppercase{Appendix D: Build and Run}}{Appendix D: Build and Run}}
+
+\section*{D.1 Web Build}
+
+The browser build is the simplest path to experiencing the museum.
+
+\begin{enumerate}
+\item Locate \texttt{VirtualMuseum.html} in the project root.
+\item Double-click the file. Any modern browser will open it directly.
+\item Click \textbf{Enter Museum} on the title screen.
+\item If a Meta Quest browser detects WebXR support, an \textbf{Enter VR} button appears at the top of the screen.
+\end{enumerate}
+
+\section*{D.2 Unity Build for Meta Quest}
+
+\begin{enumerate}
+\item Install Unity Hub and add Unity 2022.3 LTS with the Android Build Support module.
+\item Open the project at the repository root with Unity Hub.
+\item Allow Unity to resolve packages from \texttt{Packages/manifest.json}.
+\item Run \textbf{Tools $\rightarrow$ Virtual Museum $\rightarrow$ Setup Wizard} to validate the scene.
+\item In \textbf{File $\rightarrow$ Build Settings}, switch the platform to Android.
+\item Connect a Meta Quest in developer mode over USB-C.
+\item Click \textbf{Build And Run}.
+\end{enumerate}
+
+\section*{D.3 Editor Tools}
+
+The project ships with two custom editor windows:
+
+\begin{itemize}
+\item \textbf{Tools $\rightarrow$ Virtual Museum $\rightarrow$ Build Monument Catalog} --- creates ScriptableObject assets and prefabs for the Indian heritage subset.
+\item \textbf{Tools $\rightarrow$ Virtual Museum $\rightarrow$ Generate Heritage Site} --- procedurally generates a placeholder heritage site for performance testing.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\fbox{\rule{0pt}{7cm}\rule{0.85\textwidth}{0pt}}
+\caption{Setup Wizard window inside the Unity Editor. Insert screenshot here.}
+\label{fig:wizard}
+\end{figure}

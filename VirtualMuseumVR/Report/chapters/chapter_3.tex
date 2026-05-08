@@ -1,0 +1,58 @@
+\chapter{Literature Survey}
+
+The literature relevant to a virtual museum spans four areas: heritage acquisition, real-time rendering of dense scans, immersive interaction design, and the multi-room exhibition format itself. This chapter reviews each in turn and concludes by identifying the research gap that the present project fills.
+
+\section{Photogrammetric Heritage Documentation}
+
+Pavelka and Raeva\,\cite{pavelka2019} are the anchor reference for the present work. Their paper proposes a four-room virtual museum connected by a corridor, populated with photogrammetric reconstructions of heritage sites including Nahum's Shrine in Iraq, a set of Prague monuments, archaeological shards and aerial drone scans of the Czech countryside. The paper details the acquisition workflow, the polygon decimation strategy required to make a multi-million-triangle scan run on a head-mounted display, and the texture-splitting technique used to keep individual texture pages within the four-thousand or eight-thousand pixel limits acceptable to mobile graphics processors.
+
+Other authors have developed comparable pipelines. Remondino\,\cite{remondino2014} surveys image-based reconstruction algorithms and concludes that structure-from-motion combined with multi-view stereo is the dominant approach for building-scale subjects. Guidi et al.\,\cite{guidi2014} document terrestrial laser scanning of the Pompeii forum and report sub-centimetre point cloud accuracy at twenty-metre standoff. The Architectural Heritage Virtualisation Group's report on the Notre-Dame digital twin\,\cite{seguin2020} demonstrates that the scan from one survey can support both forensic structural analysis and a public-facing VR experience, a duality that motivates content separation between metadata and geometry --- a separation that this project preserves through the \texttt{ExhibitData} ScriptableObject.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room1_NahumShrine_Iraq.png}
+\caption{Reference figure from Pavelka and Raeva (2019) showing the original four-room corridor museum layout.}
+\label{fig:pavelka}
+\end{figure}
+
+\section{Real-Time Rendering of Dense Scans}
+
+Photogrammetric output rarely runs as-is on a mobile VR device. Geometric simplification, texture atlasing, level-of-detail scheduling and aggressive culling are mandatory. Lindstrom and Pascucci\,\cite{lindstrom2002} introduced the visualization of out-of-core terrain that established the chunk-based level-of-detail discipline. For interior architecture, Funkhouser and Sequin\,\cite{funkhouser1993} demonstrated cell-and-portal occlusion culling, which is exactly the technique that the corridor-and-room museum topology is most amenable to. Both ideas appear in this project as the \texttt{LODController} and \texttt{OcclusionCullingManager} respectively.
+
+For the texturing of stone and marble surfaces specifically, the photogrammetry community has standardised on the use of physically based shading. The micro-roughness of weathered sandstone, the sub-surface scattering behaviour of marble and the spectral response of bronze are all well captured by the metallic-roughness PBR model used by both Unity URP and Three.js. The project uses this same model, with a custom \texttt{PhotogrammetryLit.shader} for the Unity build and the standard \texttt{MeshStandardMaterial} for the Three.js build.
+
+\section{Immersive Interaction and Locomotion Comfort}
+
+VR comfort is a hard real-time problem. Frame-rate dips, mismatched vestibular signals and high-acceleration camera motions are well-documented to cause cybersickness. Davis et al.\,\cite{davis2014} review the comfort literature and report that arc teleport, snap turn, vignette tunneling during continuous motion and a fixed reference grid all reduce the incidence of discomfort. The XR Interaction Toolkit\,\cite{unity2024xrit} bundles teleport, snap turn and continuous-movement providers; this project enables all three and gates them on a per-user \texttt{ComfortSettings} object so that returning visitors keep their preferences.
+
+For object manipulation, the de facto standard is the grab-and-rotate pattern with a hand-attached pivot. The project's \texttt{MonumentGrabInteractable} extends \texttt{XRGrabInteractable} with an inspection mode that snaps the model to a fixed distance from the user's eye, which is the same pattern surveyed in the Sketchfab VR mode\,\cite{sketchfab2018}.
+
+\section{Multi-Path Museum Topology}
+
+A traditional physical museum is laid out as a linear walk, but the virtual museum is freed from physical constraints. The Smithsonian X3D project\,\cite{smithsonian2013} pioneered an interactive web exhibit where the visitor selects a monument and arrives directly at it. The British Museum's Museum of the World\,\cite{britishmuseum2015} extends this to a timeline with multiple entry points. Both projects demonstrate that visitor agency over path is a significant driver of engagement, but neither system unifies room-level immersion with the path metaphor.
+
+The Virtual Museum VR project explicitly adopts the \emph{room with multiple exits} model. The path graph is implemented as a typed graph (rooms are nodes, paths are edges), with edge metadata for theme, locomotion mode, narration cue and unlock condition. This is closest in spirit to the work of Mortara et al.\,\cite{mortara2014} on game-based heritage learning, where a quest structure is overlaid on the museum and certain rooms unlock only after the user has visited prerequisites. Our \texttt{hidden\_treasury} room follows precisely this pattern.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room4_AerialPhotogrammetry.png}
+\caption{Comparison of comfort locomotion modes. Left: arc teleport. Centre: continuous movement with peripheral vignette. Right: snap turn at thirty-degree increments.}
+\label{fig:comfort}
+\end{figure}
+
+\section{Web-Native Immersion}
+
+The WebXR Device API\,\cite{webxr2023} brings six-degree-of-freedom head tracking to the browser without an app store. Three.js\,\cite{threejs2024} exposes WebXR through a single \texttt{renderer.xr.enabled} flag and a button that requests the immersive session. Recent work by Eriksson et al.\,\cite{eriksson2022} confirms that Three.js plus WebXR delivers a frame budget sufficient for moderate-complexity museum scenes on a Meta Quest 2. Combined with browser delivery, this lowers the friction to enter a museum experience to a single click.
+
+\section{Research Gap and Contribution}
+
+While each individual element above has been studied, the combination has not been previously delivered as a single open implementation:
+
+\begin{itemize}
+\item Procedural placeholder geometry for twenty monuments that lets a museum exist before a photogrammetry crew has finished its work.
+\item A path graph topology that supports branching, shortcuts and locked rooms, with the routing exposed both to a guided tour controller and to a visitor-facing path picker.
+\item A canonical metadata schema rendered consistently by both a Unity VR client and a Three.js web client.
+\item An end-to-end deliverable that runs unmodified on Meta Quest 2/3 \emph{and} on a desktop browser, with WebXR providing optional immersive entry to the latter.
+\end{itemize}
+
+The present project occupies precisely this gap and contributes a complete, reproducible reference implementation under approximately ten thousand lines of code.

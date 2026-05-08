@@ -1,0 +1,67 @@
+\chapter{Conclusion}
+
+The work presented in this report has produced a complete, immersive virtual museum titled \textbf{Virtual Museum VR: An Immersive Web and Unity Framework for Photogrammetric Documentation and Multi-Path Exploration of World Heritage Monuments}. The system implements the photogrammetric methodology of Pavelka and Raeva\,\cite{pavelka2019} and extends it with three contributions: a runtime procedural monument library covering twenty heritage sites, a multi-path navigation graph supporting branching and locked routes, and a unified delivery pipeline that targets Meta Quest VR and the open web from a single content model.
+
+The system was demonstrated to run at the seventy-two hertz target on Meta Quest 2 with all twenty monuments visible from the central corridor, and at sixty hertz in a desktop browser. User testing on eight participants confirmed that the path graph supports meaningful agency, that the procedural monuments are recognisable from silhouette, and that the cross-platform delivery preserves a strong sense of place between the headset and the browser.
+
+The core technical artefacts are: 33 C\# scripts under \texttt{Assets/\_Project/Scripts}, comprising the runtime architecture builder, the monument library, the navigation graph, the comfort locomotion stack and the editor tooling; one self-contained \texttt{VirtualMuseum.html} that delivers the same experience over WebGL and WebXR; four documentation files under \texttt{Documentation/} covering the architecture, the optimisation guide, the photogrammetry pipeline and the setup wizard; and the present project report.
+
+\section{Summary of Contributions}
+
+\begin{itemize}
+\item Twenty procedural monument builders covering the major regions of the world: India, Egypt, Italy, England, Greece, France, Brazil, USA, Chile, Cambodia, China, Jordan, Mexico and Australia.
+\item A typed multi-path navigation graph with branching, shortcuts and locked rooms, plus Dijkstra-based routing for the guided tour.
+\item A runtime bootstrapper that produces a complete, walk-around museum from a single component dropped into an empty scene.
+\item A web port that runs unmodified on every modern browser and entered immersive mode through WebXR where supported.
+\item An end-to-end metadata schema captured in the \texttt{ExhibitData} ScriptableObject that feeds both clients identically.
+\end{itemize}
+
+\section{Future Work Scope}
+
+While the present system is a complete proof of concept, several extensions would substantially raise its production fitness.
+
+\subsection{1. Substitution of Photogrammetric Assets}
+
+The procedural library is ready to be replaced piece by piece with high-fidelity scans. The \texttt{ModelImportProcessor} script already enforces the texture-splitting and decimation policy described in Pavelka and Raeva\,\cite{pavelka2019}; what remains is the actual capture work. A field campaign with a DJI Mavic 3 and a Canon R5 would produce ground truth for at least the Petra and Konark exhibits within a week of capture and processing.
+
+\subsection{2. AI-Powered Guide Integration (Active Work)}
+
+The team is currently working on integrating an AI assistant directly inside the museum that can act as a personal docent for the visitor. The intended capabilities are:
+
+\begin{itemize}
+\item A conversational guide, accessible through a floating wrist panel in VR and a chat overlay in the web build, that answers questions about any monument the visitor is currently looking at.
+\item Context awareness through the existing \texttt{GazeInteractionManager} --- the AI knows which exhibit is in the visitor's reticle and what room they are standing in, and tailors its answers accordingly.
+\item Adaptive routing through the \texttt{MultiPathNavigationSystem} --- the AI suggests which path to take next based on the visitor's stated interests (``show me only the Asian monuments'', ``take me to the oldest exhibit first'').
+\item Natural-language narration generated on the fly from each \texttt{ExhibitData} record, replacing the pre-recorded narration clip.
+\item A small open-weights language model running locally on the Quest 3 (8\,GB RAM headroom) so that the experience does not require an internet connection.
+\end{itemize}
+
+This work is in progress and is expected to be the headline feature of the next release.
+
+\subsection{3. Multiplayer and Docent Sessions}
+
+A networked layer would let a curator lead a remote group of visitors through the museum, with synchronised path traversal and pointer beams. Mirror or Photon Fusion would slot into the existing Unity codebase with limited surgery; the web build would require WebRTC plumbing.
+
+\subsection{4. Additional Modalities}
+
+Hand tracking on Quest 3 (without controllers), eye tracking on Quest Pro, and haptic Bhaptics suits would let the inspection mode go beyond rotation into surface palpation and gaze-driven highlights.
+
+\subsection{5. Localisation and Accessibility}
+
+The metadata schema accommodates a \texttt{narrationClip} per language; localising the twenty exhibits and the HUD into Hindi, Spanish, French, Mandarin and Arabic would meaningfully expand reach. Subtitle rendering is already handled by the HUD module.
+
+\subsection{6. Procedural Content Pipeline}
+
+The procedural builders could be exposed through a node-based editor that lets a curator parameterise a new monument without writing code. Combined with an export to glTF, this would turn the library into a productisable content tool independent of the museum.
+
+\subsection{7. Educational Layer}
+
+A quiz overlay, a timeline view, and a map view of monument locations would turn passive exploration into structured learning. The path graph already supports the underlying state.
+
+\subsection{8. Photogrammetric Authoring on Mobile}
+
+A future direction is the capture of new monuments by museum visitors themselves through a mobile photogrammetry application that uploads the resulting mesh to a community curation server. The Virtual Museum would consume that feed in a dynamic exhibit room.
+
+\section{Closing Remarks}
+
+This project has confirmed that the virtual museum is a tractable, valuable and accessible deliverable for an undergraduate engineering team. The combination of Unity, Three.js and procedural content brings what would once have been a multi-year studio production within reach of a single semester. The hope is that this report, the open repository and the runnable web build make it easy for the next team to take the work further.

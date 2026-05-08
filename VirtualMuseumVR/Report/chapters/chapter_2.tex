@@ -1,0 +1,101 @@
+\chapter{Motivation}
+
+Project work undertaken by final-year engineering students is the bridge between theory and practice. It gives an opportunity to take material learned in classrooms --- linear algebra, software engineering, human--computer interaction, computer graphics --- and to use it in service of a tangible problem that has a user. \textbf{Virtual Museum VR} was chosen as that problem because it sits at an unusually rich intersection of these disciplines.
+
+\section{Why Final-Year Engineering Projects Are Important}
+
+Final-year projects play a significant role in an engineer's education because they test the student's capacity to convert an idea into reality. Such projects expose the student to problem solving, programming, hardware integration, technical writing, teamwork and research literacy. The final-year project is often the first occasion on which a student takes complete responsibility for a system from problem definition to working delivery.
+
+\subsection{Identifying a Real-World Problem and Designing a Solution}
+
+The problem we identify is the inaccessibility of cultural heritage. Most physical monuments are seen by a tiny fraction of the world's population. Many are deteriorating. Some have already been destroyed and exist only as historical photographs. A virtual museum that runs in a browser or on a sub-five-hundred-dollar headset can put a visitor inside the Petra Treasury or under the dome of the Taj Mahal in seconds, at zero marginal cost per visitor.
+
+This project focuses on:
+
+\begin{itemize}
+\item Reconstructing twenty world heritage monuments procedurally and rendering them in real time.
+\item Designing a multi-path navigation system that gives the visitor agency over the order of exploration.
+\item Delivering a single content model to two platforms --- Meta Quest VR and the open web --- so that the experience is not gated behind a hardware paywall.
+\end{itemize}
+
+These functions are particularly useful in classroom settings, museum kiosks, distance-learning programs and accessibility scenarios where physical visits are impossible.
+
+\subsection{Exploring Diverse Research Areas}
+
+Final-year projects let students explore multiple technical domains. This project combines several:
+
+\begin{itemize}
+\item Computer graphics and procedural geometry generation
+\item Real-time rendering, physically based shading and shadow mapping
+\item Human-computer interaction and VR comfort design
+\item Software architecture for cross-platform deployment
+\item Web technologies, particularly the WebXR Device API
+\item Cultural heritage informatics and metadata modelling
+\item Pathfinding on graphs (Dijkstra) for guided tour routing
+\end{itemize}
+
+Working across these areas reinforces both the theoretical material from coursework and the engineering judgement needed to make the pieces talk to each other.
+
+\subsection{Choosing Relevant Topics and Mentorship}
+
+Topic selection and proper guidance are crucial for project success. Virtual reality, digital twins, and digital heritage are highly relevant in current research and industry. The Virtual Museum VR project gave the team an opportunity to learn, in working code, real-world skills such as:
+
+\begin{enumerate}
+\item Unity scripting against the XR Interaction Toolkit
+\item Real-time procedural mesh construction
+\item ScriptableObject-driven content authoring
+\item Three.js scene management with import maps and ES modules
+\item Cross-platform delivery from a shared metadata schema
+\item Performance profiling on a constrained mobile GPU
+\end{enumerate}
+
+Mentorship from the project guide and from the open-source communities of both Unity and Three.js was essential to maintaining a sensible workflow and to avoiding architectural dead ends.
+
+\subsection{Understanding and Preparing Project Documentation}
+
+Documentation is an essential component of every engineering project. It allows the team to communicate the purpose, methods, implementation and findings, and it allows future students to extend the work. This report and the in-repository \texttt{Documentation/} folder together form the documentation set, with the latter holding the system architecture diagram, the photogrammetry pipeline and the optimization guide.
+
+Through this report the team has developed skills in:
+
+\begin{itemize}
+\item Writing technical prose at chapter length
+\item Explaining a layered software architecture
+\item Producing diagrams that map to running code
+\item Citing prior work appropriately
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{Room2_PragueMonuments.png}
+\caption{Photograph of the team working on the Virtual Museum project.}
+\label{fig:team}
+\end{figure}
+
+\subsection{Effective Planning}
+
+Planning is essential for the efficient execution of a project that crosses two engines, two device classes and twenty pieces of content. The team broke the work down into the following streams executed in parallel where possible:
+
+\begin{itemize}
+\item Architecture: room layout, hallway generation, lighting
+\item Content: procedural monument geometry, twenty pieces
+\item Interaction: grab, inspect, gaze, comfort locomotion
+\item Navigation: path graph, routing, locked edges
+\item UI: HUD, info panel, path picker
+\item Optimization: LOD, occlusion culling, texture streaming
+\item Web port: a parallel Three.js implementation
+\end{itemize}
+
+\subsection{Platform for Skill Development and Innovation}
+
+Working on the Virtual Museum gave the team direct exposure to:
+
+\begin{itemize}
+\item C\# 9.0 and Unity 2022.3 LTS
+\item ECMAScript modules, the WebGL pipeline and the WebXR API
+\item Dijkstra's algorithm in production
+\item Procedural primitive composition for monument modelling
+\item Tone-mapped physically based rendering
+\item Test-on-device cycles on a Meta Quest
+\end{itemize}
+
+In aggregate the project embodies the spirit of engineering education: identifying a problem, building something that solves it, and reflecting on what worked.

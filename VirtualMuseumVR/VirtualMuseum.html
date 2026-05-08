@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Virtual Museum VR — Immersive World Heritage Tour</title>
+<meta name="description" content="Explore 20 world-heritage monuments across 16 themed rooms in an immersive 3D virtual museum. Walk through the Taj Mahal, Colosseum, Parthenon and more." />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#050608;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  canvas{display:block}
+  #hud{position:fixed;top:14px;left:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);max-width:340px;pointer-events:none}
+  #hud h1{font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:#dcb574;margin-bottom:6px}
+  #hud .room-name{font-size:18px;font-weight:600;color:#fff}
+  #hud .desc{font-size:12px;color:#bbb;margin-top:6px;line-height:1.4}
+  #pathPicker{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:90vw}
+  .path-btn{background:rgba(220,181,116,.12);border:1px solid rgba(220,181,116,.4);color:#dcb574;padding:10px 16px;border-radius:30px;font-size:13px;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px);pointer-events:auto;font-weight:500}
+  .path-btn:hover{background:rgba(220,181,116,.25);transform:translateY(-2px);box-shadow:0 6px 20px rgba(220,181,116,.2)}
+  .path-btn .meta{display:block;font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+  .path-btn.locked{opacity:.4;cursor:not-allowed;border-color:#555;color:#777}
+  #legend{position:fixed;top:14px;right:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);font-size:11px;line-height:1.7;color:#bbb;max-width:230px}
+  #legend b{color:#dcb574;letter-spacing:1px;font-size:10px;text-transform:uppercase}
+  kbd{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.1);font-family:monospace;font-size:10px;color:#fff;margin:0 2px}
+  #infoCard{position:fixed;top:50%;right:16px;transform:translateY(-50%);background:rgba(8,10,14,.92);backdrop-filter:blur(20px);padding:18px 22px;border-radius:16px;border:1px solid rgba(220,181,116,.3);max-width:300px;display:none;pointer-events:none;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  #infoCard h2{font-size:18px;color:#fff;margin-bottom:4px}
+  #infoCard .era{font-size:11px;color:#dcb574;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  #infoCard .loc{font-size:13px;color:#bbb;margin-bottom:10px}
+  #infoCard .body{font-size:12px;color:#aaa;line-height:1.5}
+  #map{position:fixed;bottom:90px;right:14px;width:200px;height:200px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);border-radius:14px;border:1px solid rgba(255,255,255,.08);padding:6px}
+  #map canvas{width:100%;height:100%}
+  #vrButton{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.18);border:1px solid #dcb574;color:#dcb574;padding:10px 22px;border-radius:30px;font-size:13px;cursor:pointer;font-weight:600;letter-spacing:1.5px}
+  #vrButton:hover{background:rgba(220,181,116,.3)}
+  #vrButton:disabled{opacity:.4;cursor:not-allowed}
+  #toast{position:fixed;top:78px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.92);color:#1a1208;padding:8px 18px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none}
+  #intro{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a1208 0%,#050608 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:100;transition:opacity .8s}
+  #intro h1{font-size:48px;color:#dcb574;letter-spacing:6px;margin-bottom:16px;font-weight:300}
+  #intro p{color:#888;font-size:15px;margin-bottom:8px;max-width:560px;line-height:1.6}
+  #intro .start{margin-top:30px;background:#dcb574;color:#1a1208;border:none;padding:14px 38px;border-radius:30px;font-size:14px;letter-spacing:2px;font-weight:700;cursor:pointer}
+  #intro .start:hover{background:#e8c987}
+  #crosshair{position:fixed;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);pointer-events:none;transform:translate(-50%,-50%)}
+</style>
+<script src="js/monument-data.js"></script>
+<script src="js/heritage-ui.js"></script>
+</head>
+<body>
+
+<div id="intro">
+  <h1>VIRTUAL MUSEUM</h1>
+  <p>An immersive walking tour of 20 world-heritage monuments across 14 themed rooms.</p>
+  <p>Move with <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>, look around with the mouse, and pick a path at every junction.</p>
+  <button class="start" id="startBtn">ENTER MUSEUM</button>
+</div>
+
+<div id="hud" style="display:none">
+  <h1>NOW VISITING</h1>
+  <div class="room-name" id="roomName">—</div>
+  <div class="desc" id="roomDesc">—</div>
+</div>
+
+<div id="legend" style="display:none">
+  <b>Controls</b><br/>
+  <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Walk<br/>
+  <kbd>Mouse</kbd> Look<br/>
+  <kbd>Shift</kbd> Run · <kbd>Space</kbd> Hop<br/>
+  <kbd>F</kbd> Inspect monument<br/>
+  <kbd>N</kbd> Narrate · <kbd>T</kbd> Timeline · <kbd>G</kbd> Artifacts<br/>
+  <kbd>Esc</kbd> Release cursor<br/>
+  <kbd>1</kbd>–<kbd>9</kbd> Pick a path
+</div>
+
+<div id="pathPicker"></div>
+<div id="infoCard"></div>
+<div id="map"><canvas id="mapCanvas"></canvas></div>
+<button id="vrButton" style="display:none">ENTER VR</button>
+<div id="toast"></div>
+<div id="crosshair" style="display:none"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MONUMENT_BUILDERS } from './js/monument-builders.js';
+
+const gltfLoader = new GLTFLoader();
+
+// =============================================================================
+// VIRTUAL MUSEUM — Three.js immersive walking experience
+// =============================================================================
+// Mirrors the Unity project's structure:
+//   • WorldMonumentLibrary  ←→  MONUMENT_BUILDERS
+//   • MultiPathNavigationSystem  ←→  pathGraph
+//   • RuntimeMuseumBootstrapper  ←→  buildMuseum()
+// =============================================================================
+
+const FALLBACK_MONUMENT_DATA = {
+  TajMahal:           { title:"Taj Mahal",                 era:"17th C. (Mughal)",         location:"Agra, India",            color:0xf3f0eb, body:"White marble mausoleum built by Shah Jahan for Mumtaz Mahal — flanked by minarets and reflecting pools." },
+  QutubMinar:         { title:"Qutub Minar",               era:"12th C. (Sultanate)",      location:"Delhi, India",           color:0xc66c44, body:"Five-tiered tapered minaret of fluted red sandstone — the tallest brick minaret in the world." },
+  HampiChariot:       { title:"Stone Chariot, Hampi",      era:"16th C. (Vijayanagara)",   location:"Hampi, India",           color:0xa68c66, body:"Monolithic stone chariot dedicated to Garuda — wheels carved from a single block of granite." },
+  KonarkSunTemple:    { title:"Konark Sun Temple",         era:"13th C. (Eastern Ganga)",  location:"Odisha, India",          color:0x8c6648, body:"A colossal stone chariot dedicated to Surya, with 24 wheels and 7 horses pulling the sun across the sky." },
+  AjantaCaves:        { title:"Ajanta Caves",              era:"2nd C. BCE – 5th C. CE",   location:"Maharashtra, India",     color:0x806b59, body:"Buddhist rock-cut monasteries with murals and sculptures carved into a horseshoe cliff." },
+  GreatPyramidGiza:   { title:"Great Pyramid of Giza",     era:"c. 2560 BCE",              location:"Giza, Egypt",            color:0xd8c08c, body:"The oldest of the Seven Wonders, originally cased in polished Tura limestone." },
+  Colosseum:          { title:"Roman Colosseum",           era:"80 CE",                    location:"Rome, Italy",            color:0xc6a681, body:"Largest amphitheatre ever built — 50,000 spectators watched gladiatorial combat under its arches." },
+  Stonehenge:         { title:"Stonehenge",                era:"c. 3000 BCE",              location:"Wiltshire, England",     color:0x8c8c8c, body:"Prehistoric ring of standing sarsen stones, aligned with the solstices." },
+  Parthenon:          { title:"Parthenon",                 era:"447 BCE",                  location:"Athens, Greece",         color:0xeae0c8, body:"Doric temple to Athena — the architectural high-water mark of classical Greece." },
+  EiffelTower:        { title:"Eiffel Tower",              era:"1889 CE",                  location:"Paris, France",          color:0x4d4540, body:"330m wrought-iron lattice — the tallest structure in the world for 41 years." },
+  ChristTheRedeemer:  { title:"Christ the Redeemer",       era:"1931 CE",                  location:"Rio de Janeiro, Brazil", color:0xdcd6cc, body:"Art Deco statue of Jesus Christ atop Corcovado mountain, arms spread 28m wide." },
+  StatueOfLiberty:    { title:"Statue of Liberty",         era:"1886 CE",                  location:"New York, USA",          color:0x66c6a6, body:"A gift from France — copper statue of Libertas oxidized to its iconic green patina." },
+  EasterIslandMoai:   { title:"Moai (Easter Island)",      era:"1250–1500 CE",             location:"Rapa Nui, Chile",        color:0x736659, body:"Enormous stone figures carved by the Rapa Nui people from compressed volcanic ash." },
+  AngkorWat:          { title:"Angkor Wat",                era:"12th C. (Khmer)",          location:"Siem Reap, Cambodia",    color:0x8c8066, body:"The largest religious monument in the world — a temple-mountain dedicated to Vishnu." },
+  GreatWallSection:   { title:"Great Wall (section)",      era:"7th C. BCE – 17th C. CE",  location:"Northern China",         color:0x998c7a, body:"21,000 km of fortifications built across two thousand years to protect Chinese states." },
+  PetraTreasury:      { title:"Al-Khazneh, Petra",         era:"1st C. CE (Nabataean)",    location:"Petra, Jordan",          color:0xd1805a, body:"Hellenistic facade carved directly into the pink sandstone cliff face of the Siq." },
+  ChichenItza:        { title:"El Castillo, Chichén Itzá", era:"9th–12th C. (Maya)",       location:"Yucatán, Mexico",        color:0x9e9482, body:"Stepped Mayan pyramid — at the equinox the sun creates a serpent shadow on the staircase." },
+  LeaningTowerPisa:   { title:"Leaning Tower of Pisa",     era:"1372 CE",                  location:"Pisa, Italy",            color:0xf0ebdc, body:"Free-standing campanile that began tilting during construction due to soft soil." },
+  SydneyOperaHouse:   { title:"Sydney Opera House",        era:"1973 CE",                  location:"Sydney, Australia",      color:0xf5f5f3, body:"Expressionist masterpiece by Jørn Utzon — concrete shells echoing sails on the harbour." }
+};
+const MONUMENT_DATA = { ...FALLBACK_MONUMENT_DATA, ...(window.MONUMENT_DATA_RICH || {}) };
+
+
+// Pre-allocated vectors for hot-path reuse (zero GC pressure)
+const _fwd = new THREE.Vector3();
+const _right = new THREE.Vector3();
+const _move = new THREE.Vector3();
+const _nextX = new THREE.Vector3();
+const _nextZ = new THREE.Vector3();
+const autoRotateObjects = [];  // only these get rotated each frame
+
+
+// =============================================================================
+// Path graph (mirrors MultiPathNavigationSystem.InstallDefaultMuseumGraph)
+// =============================================================================
+const ROOM_THEMES = {
+  Default:    { ambient:0x222227, fog:0x222227, light:0xffe8c8 },
+  Ancient:    { ambient:0x1a1108, fog:0x2a1c10, light:0xff9d5c },
+  Modern:     { ambient:0x1a2230, fog:0x2c3848, light:0xc8e8ff },
+  Mystical:   { ambient:0x150f1f, fog:0x251c33, light:0xb88cff },
+  Industrial: { ambient:0x1c1c1c, fog:0x2c2c2c, light:0xa6c0d8 },
+  Reflective: { ambient:0x101822, fog:0x18283a, light:0xf0d99c }
+};
+
+const ROOMS = [
+  { id:"entrance",         name:"Grand Entrance",          pos:[0,0,0],      size:[16,16,5], theme:"Reflective", color:0xa89880, monuments:[] },
+  { id:"main_corridor",    name:"Main Corridor",           pos:[0,0,30],     size:[14,14,5], theme:"Modern",     color:0x9494a0, monuments:[] },
+  { id:"east_corridor",    name:"East Wing Corridor",      pos:[28,0,30],    size:[14,10,5], theme:"Industrial", color:0x807a78, monuments:[] },
+
+  { id:"iraq_room",        name:"Iraq — Nahum Shrine",     pos:[-30,0,12],   size:[16,16,5], theme:"Ancient",    color:0xa67c5c, monuments:["PetraTreasury"] },
+  { id:"prague_room",      name:"Prague Monuments",        pos:[-18,0,52],   size:[16,16,5], theme:"Reflective", color:0xb0a890, monuments:["LeaningTowerPisa","SydneyOperaHouse"] },
+  { id:"shards_room",      name:"Archaeological Shards",   pos:[18,0,52],    size:[16,16,5], theme:"Industrial", color:0x707078, monuments:["Stonehenge","EasterIslandMoai"] },
+  { id:"aerial_room",      name:"Aerial Photogrammetry",   pos:[-30,0,48],   size:[16,16,7], theme:"Modern",     color:0x6080a0, monuments:["GreatPyramidGiza","ChichenItza"] },
+  { id:"sky_observatory",  name:"Sky Observatory",         pos:[-30,0,72],   size:[16,16,8], theme:"Modern",     color:0x4070a8, monuments:[] },
+
+  { id:"indian_hall",      name:"Indian Architecture Hall",pos:[0,0,60],     size:[20,20,6], theme:"Mystical",   color:0xb87a44, monuments:["QutubMinar","HampiChariot","KonarkSunTemple","RedFort"] },
+  { id:"taj_mahal_garden", name:"Taj Mahal Garden",        pos:[-18,0,86],   size:[18,18,6], theme:"Reflective", color:0xeae0d0, monuments:["EiffelTower","ChristTheRedeemer"] },
+  { id:"konark_courtyard", name:"Konark Courtyard",        pos:[18,0,86],    size:[18,18,6], theme:"Mystical",   color:0x8c6648, monuments:["AjantaCaves"] },
+  { id:"hidden_treasury",  name:"Hidden Treasury",         pos:[0,0,108],    size:[14,14,5], theme:"Mystical",   color:0x5a3c28, monuments:["StatueOfLiberty"] },
+
+  { id:"colosseum_room",   name:"Colosseum Atrium",        pos:[52,0,30],    size:[20,20,7], theme:"Ancient",    color:0xc6a681, monuments:["Colosseum"] },
+  { id:"greece_room",      name:"Greece — Parthenon Hall", pos:[52,0,52],    size:[18,18,6], theme:"Ancient",    color:0xeae0c8, monuments:["Parthenon"] },
+  { id:"roman_aqueduct",   name:"Roman Aqueduct",          pos:[80,0,30],    size:[22,14,6], theme:"Ancient",    color:0xc6a681, monuments:["GreatWallSection"] },
+  { id:"parthenon_inner",  name:"Parthenon Cella",         pos:[80,0,52],    size:[16,16,6], theme:"Reflective", color:0xeae0c8, monuments:["AngkorWat"] }
+];
+
+const EDGES = [
+  ["e_entrance_main",      "entrance","main_corridor"],
+  ["e_main_iraq",          "main_corridor","iraq_room"],
+  ["e_main_prague",        "main_corridor","prague_room"],
+  ["e_main_shards",        "main_corridor","shards_room"],
+  ["e_main_aerial",        "main_corridor","aerial_room"],
+  ["e_main_indian",        "main_corridor","indian_hall"],
+  ["e_main_east",          "main_corridor","east_corridor"],
+  ["e_east_colosseum",     "east_corridor","colosseum_room"],
+  ["e_east_greece",        "east_corridor","greece_room"],
+  ["e_colosseum_aqueduct", "colosseum_room","roman_aqueduct"],
+  ["e_greece_inner",       "greece_room","parthenon_inner"],
+  ["e_aerial_sky",         "aerial_room","sky_observatory"],
+  ["e_indian_taj",         "indian_hall","taj_mahal_garden"],
+  ["e_indian_konark",      "indian_hall","konark_courtyard"],
+  ["e_indian_treasury",    "indian_hall","hidden_treasury", { locked:true, unlock:"key" }],
+  ["e_shortcut_iraq_shards","iraq_room","shards_room"],
+  ["e_taj_konark_loop",    "taj_mahal_garden","konark_courtyard"],
+  ["e_konark_treasury",    "konark_courtyard","hidden_treasury", { locked:true, unlock:"key" }],
+  ["e_iraq_aerial",        "iraq_room","aerial_room"]   // extra path (multi-route)
+];
+
+// =============================================================================
+// Scene setup
+// =============================================================================
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0c10);
+scene.fog = new THREE.Fog(0x0a0c10, 40, 120);
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, .1, 500);
+camera.position.set(0, 1.7, 5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.xr.enabled = true;  // needed for WebXR button to work
+document.body.appendChild(renderer.domElement);
+
+// =============================================================================
+// Procedural canvas textures (zero external dependencies)
+// =============================================================================
+function makeCanvasTex(drawFn, size=256){
+  const cv = document.createElement('canvas'); cv.width = cv.height = size;
+  drawFn(cv.getContext('2d'), size);
+  const t = new THREE.CanvasTexture(cv);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+const floorTextures = {
+  marble: makeCanvasTex((ctx,s)=>{ ctx.fillStyle='#d0c8b8'; ctx.fillRect(0,0,s,s); ctx.strokeStyle='#b0a898'; ctx.lineWidth=.5; ctx.globalAlpha=.3; for(let i=0;i<12;i++){ctx.beginPath();ctx.moveTo(Math.random()*s,Math.random()*s);ctx.lineTo(Math.random()*s,Math.random()*s);ctx.stroke();}; }),
+  sand:   makeCanvasTex((ctx,s)=>{ ctx.fillStyle='#c8a870'; ctx.fillRect(0,0,s,s); ctx.fillStyle='rgba(0,0,0,0.05)'; for(let i=0;i<200;i++){ctx.beginPath();ctx.arc(Math.random()*s,Math.random()*s,Math.random()*2,0,Math.PI*2);ctx.fill();} }),
+  dark:   makeCanvasTex((ctx,s)=>{ ctx.fillStyle='#1a1c24'; ctx.fillRect(0,0,s,s); ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1; for(let i=0;i<s;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,s);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(s,i);ctx.stroke();} }),
+  red:    makeCanvasTex((ctx,s)=>{ ctx.fillStyle='#7c3a28'; ctx.fillRect(0,0,s,s); ctx.fillStyle='rgba(200,100,60,0.1)'; for(let i=0;i<100;i++){ctx.fillRect(Math.random()*s,Math.random()*s,Math.random()*4+1,Math.random()*4+1);} }),
+};
+Object.values(floorTextures).forEach(t=>{ t.repeat.set(5,5); });
+
+// Lighting — simple hemisphere + directional, no shadows
+const hemi = new THREE.HemisphereLight(0x8899bb, 0x334422, 0.8);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff1d9, 1.1);
+sun.position.set(40, 60, 30);
+scene.add(sun);
+scene.add(new THREE.AmbientLight(0x334455, 0.6));
+
+
+
+// =============================================================================
+// Build museum world
+// =============================================================================
+const ROOM_OBJ = {};         // id → { group, light, doorMarkers:[] }
+const PEDESTAL_INFO = [];    // { mesh, monumentKey, group }
+// O(1) room lookup for collision detection (avoids ROOMS.find in hot loop)
+const ROOM_BY_ID = {};
+ROOMS.forEach(r => { ROOM_BY_ID[r.id] = r; });
+
+// =============================================================================
+// Room → Image mapping (real photographs on walls)
+// =============================================================================
+const ROOM_IMAGES = {
+  entrance:        'images/grand_entrance.png',
+  main_corridor:   'images/corridor.png',
+  iraq_room:       'images/iraq.png',
+  prague_room:     'images/prague.png',
+  shards_room:     'images/shards.png',
+  aerial_room:     'images/aerial.png',
+  indian_hall:     'images/indian.png',
+  taj_mahal_garden:'images/taj_mahal.png',
+  colosseum_room:  'images/colosseum.png',
+  greece_room:     'images/parthenon.png',
+  roman_aqueduct:  'images/pyramid.png',
+  parthenon_inner: 'images/eiffel.png',
+};
+const textureLoader = new THREE.TextureLoader();
+
+// Create a framed painting for wall display
+function createPainting(url, width, height){
+  const group = new THREE.Group();
+
+  // Gold frame
+  const frameW = width + 0.16, frameH = height + 0.16, frameD = 0.06;
+  const frame = new THREE.Mesh(
+    new THREE.BoxGeometry(frameW, frameH, frameD),
+    new THREE.MeshLambertMaterial({ color: 0xb89840 })
+  );
+  group.add(frame);
+
+  // Inner dark mat
+  const matBorder = new THREE.Mesh(
+    new THREE.BoxGeometry(width + 0.06, height + 0.06, 0.02),
+    new THREE.MeshLambertMaterial({ color: 0x1a1a1a })
+  );
+  matBorder.position.z = 0.035;
+  group.add(matBorder);
+
+  // Actual image
+  textureLoader.load(url, (tex) => {
+    // Prevent sRGB color space issues and ensure good filtering
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const painting = new THREE.Mesh(
+      new THREE.PlaneGeometry(width, height),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true }) // Added transparent just in case of PNG alpha
+    );
+    painting.position.z = 0.05; // Moved from 0.045 to 0.05 to fix Z-fighting with matBorder
+    group.add(painting);
+  });
+
+  // Emissive glow bar above the painting (replaces expensive SpotLight)
+  const glowBar = new THREE.Mesh(
+    new THREE.BoxGeometry(width * 0.8, 0.06, 0.08),
+    new THREE.MeshBasicMaterial({ color: 0xfff0d0 })
+  );
+  glowBar.position.set(0, height/2 + 0.2, 0.04);
+  group.add(glowBar);
+
+  return group;
+}
+
+function buildRoom(room){
+  const grp = new THREE.Group();
+  grp.position.set(...room.pos);
+  scene.add(grp);
+
+  const [w,d,h] = room.size;
+  const wallCol = new THREE.Color(room.color);
+
+  // Floor with canvas texture
+  const floorTex = room.theme==='Ancient'  ? floorTextures.sand  :
+                   room.theme==='Mystical'  ? floorTextures.red   :
+                   room.theme==='Modern'    ? floorTextures.dark  : floorTextures.marble;
+  const floor = new THREE.Mesh(
+    new THREE.BoxGeometry(w, .2, d),
+    new THREE.MeshLambertMaterial({ map: floorTex })
+  );
+  floor.position.y = -.1;
+  grp.add(floor);
+
+  // Walls
+  const wallMat = new THREE.MeshLambertMaterial({ color: wallCol });
+  [
+    [w, h, .3, 0, h*.5,  d*.5],
+    [w, h, .3, 0, h*.5, -d*.5],
+    [.3, h, d, w*.5, h*.5, 0],
+    [.3, h, d,-w*.5, h*.5, 0]
+  ].forEach(([sw,sh,sd,px,py,pz])=>{
+    const m = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,sd), wallMat);
+    m.position.set(px,py,pz);
+    grp.add(m);
+  });
+
+  // Ceiling
+  const ceil = new THREE.Mesh(
+    new THREE.BoxGeometry(w, .15, d),
+    new THREE.MeshLambertMaterial({ color: 0x0e0f12 })
+  );
+  ceil.position.y = h;
+  grp.add(ceil);
+
+  // Room accent light
+  const theme = ROOM_THEMES[room.theme] || ROOM_THEMES.Default;
+  const rl = new THREE.PointLight(theme.light, 2.0, 25, 1.8);
+  rl.position.set(0, h * .8, 0);
+  grp.add(rl);
+
+  // ── WALL PAINTINGS ────────────────────────────────────────────
+  // Hang a real photograph on the back wall of each room
+  const imgUrl = ROOM_IMAGES[room.id];
+  if(imgUrl){
+    const pw = Math.min(w * 0.5, 5);   // painting width
+    const ph = pw * 0.75;              // 4:3 ratio
+    const painting = createPainting(imgUrl, pw, ph);
+    painting.position.set(0, h * 0.5, -d/2 + 0.4);
+    grp.add(painting);
+  }
+
+
+  // Pedestals + monument spawns
+  const monuments = room.monuments || [];
+  monuments.forEach((monKey, i) => {
+    const ang = (i / Math.max(1, monuments.length)) * Math.PI*2;
+    const r = Math.min(w,d)*.28;
+    const px = Math.sin(ang)*r, pz = Math.cos(ang)*r;
+
+    const ped = new THREE.Group();
+    ped.position.set(px, 0, pz);
+    grp.add(ped);
+
+    const pillar = new THREE.Mesh(
+      new THREE.CylinderGeometry(.35,.4,.95,16),
+      new THREE.MeshLambertMaterial({ color:0x16161a })
+    );
+    pillar.position.y = .475;
+    ped.add(pillar);
+
+    const top = new THREE.Mesh(
+      new THREE.CylinderGeometry(.45,.45,.04,32),
+      new THREE.MeshLambertMaterial({ color:0xeae4d8 })
+    );
+    top.position.y = .98;
+    ped.add(top);
+
+    // Glow ring
+    const glow = new THREE.Mesh(
+      new THREE.RingGeometry(.45,.55,32),
+      new THREE.MeshBasicMaterial({ color:theme.light, transparent:true, opacity:.6, side:THREE.DoubleSide })
+    );
+    glow.rotation.x = -Math.PI/2;
+    glow.position.y = 1.001;
+    ped.add(glow);
+
+    // Monument
+    const builder = MONUMENT_BUILDERS[monKey];
+    if(builder){
+      const setupMonument = (object) => {
+        const bbox = new THREE.Box3().setFromObject(object);
+        const size = bbox.getSize(new THREE.Vector3());
+        
+        // If the group is empty (async model not loaded yet), don't scale it
+        if(size.y < 0.001) return;
+
+        // scale to fit on pedestal (≈1.4m tall)
+        const targetH = 1.4;
+        const scale = targetH / Math.max(.001, size.y);
+        object.scale.setScalar(scale);
+        const center = bbox.getCenter(new THREE.Vector3()).multiplyScalar(scale);
+        object.position.set(-center.x, 1.0 - bbox.min.y*scale, -center.z);
+      };
+
+      const monu = builder(setupMonument);
+      setupMonument(monu);
+      
+      ped.add(monu);
+
+      monu.userData.monumentKey = monKey;
+      monu.userData.autoRotate = true;
+      monu.userData.rotateSpeed = .15 + Math.random()*.2;
+      autoRotateObjects.push(monu);
+      PEDESTAL_INFO.push({ group:monu, monumentKey:monKey, position:new THREE.Vector3().copy(ped.position).add(grp.position) });
+    }
+  });
+
+  // Room name plaque (above painting to avoid overlap)
+  const plaque = makePlaque(room.name);
+  plaque.position.set(0, h*.88, -d*.5 + .25);
+  grp.add(plaque);
+
+  // ── ARTIFACT DISPLAYS ───────────────────────────────────────────
+  // If this is the Shards Room, spawn the artifacts along the walls
+  if (room.id === 'shards_room' && window.ARTIFACT_LIBRARY) {
+    const arts = window.ARTIFACT_LIBRARY;
+    arts.forEach((art, i) => {
+      // Position artifacts along the left and right walls
+      const isLeft = i % 2 === 0;
+      const wallX = isLeft ? -w*.4 : w*.4;
+      const zPos = -d*.4 + Math.floor(i/2) * 2.5;
+      
+      const artPed = new THREE.Group();
+      artPed.position.set(wallX, 0, zPos);
+      grp.add(artPed);
+      
+      const pBase = new THREE.Mesh(new THREE.BoxGeometry(.8, 1.1, .8), new THREE.MeshLambertMaterial({ color:0x1a1a20 }));
+      pBase.position.y = 0.55;
+      artPed.add(pBase);
+      
+      // Floating glowing object representing the artifact
+      const meshColor = new THREE.Color(art.color);
+      const artMesh = new THREE.Mesh(
+        new THREE.OctahedronGeometry(.2, 1),
+        new THREE.MeshStandardMaterial({ color: meshColor, roughness: 0.2, metalness: 0.8, emissive: meshColor, emissiveIntensity: 0.2 })
+      );
+      artMesh.position.y = 1.35;
+      artPed.add(artMesh);
+      
+      artMesh.userData.monumentKey = art.id; // Map interaction to the artifact id
+      artMesh.userData.autoRotate = true;
+      artMesh.userData.rotateSpeed = 0.5;
+      autoRotateObjects.push(artMesh);
+      PEDESTAL_INFO.push({ group:artMesh, monumentKey:art.id, position:new THREE.Vector3().copy(artPed.position).add(grp.position) });
+    });
+  }
+
+  ROOM_OBJ[room.id] = { group:grp, light:rl, theme, room };
+  return grp;
+}
+
+function makePlaque(text){
+  const cv = document.createElement('canvas');
+  cv.width = 1024; cv.height = 256;
+  const ctx = cv.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,1024,0);
+  grad.addColorStop(0,'#1a120a'); grad.addColorStop(.5,'#3a2a18'); grad.addColorStop(1,'#1a120a');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,1024,256);
+  ctx.strokeStyle = '#dcb574'; ctx.lineWidth = 4; ctx.strokeRect(20,20,984,216);
+  ctx.fillStyle = '#dcb574';
+  ctx.font = 'bold 72px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, 512, 128);
+  const tex = new THREE.CanvasTexture(cv);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 1), new THREE.MeshBasicMaterial({ map:tex, transparent:true }));
+  return mesh;
+}
+
+// Build hallway (a low rectangular tunnel between two rooms)
+function buildHallway(roomA, roomB){
+  const a = new THREE.Vector3(...roomA.pos);
+  const b = new THREE.Vector3(...roomB.pos);
+  const mid = a.clone().lerp(b, .5);
+  const dir = b.clone().sub(a);
+  const len = dir.length();
+  if(len < 1) return;
+
+  const hall = new THREE.Group();
+  hall.position.copy(mid);
+  hall.lookAt(b);
+  scene.add(hall);
+
+  const floor = new THREE.Mesh(
+    new THREE.BoxGeometry(3.6, .2, len),
+    new THREE.MeshLambertMaterial({ color:0x161618 })
+  );
+  floor.position.y = 0;
+  hall.add(floor);
+
+  // glow strips
+  const stripMat = new THREE.MeshBasicMaterial({ color:0xdcb574, transparent:true, opacity:.7 });
+  for(const x of [-1.6, 1.6]){
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(.05, .03, len-.5), stripMat);
+    strip.position.set(x, .12, 0);
+    hall.add(strip);
+  }
+}
+
+// =============================================================================
+// Build everything
+// =============================================================================
+ROOMS.forEach(buildRoom);
+EDGES.forEach(([id, a, b]) => {
+  const ra = ROOMS.find(r => r.id === a);
+  const rb = ROOMS.find(r => r.id === b);
+  if(ra && rb) buildHallway(ra, rb);
+});
+
+// Skybox
+const sky = new THREE.Mesh(
+  new THREE.SphereGeometry(250, 32, 16),
+  new THREE.MeshBasicMaterial({ side:THREE.BackSide, color:0x0a0d12 })
+);
+scene.add(sky);
+
+// Stars
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(2000*3);
+for(let i=0;i<2000;i++){
+  const r = 200 + Math.random()*40;
+  const t = Math.random()*Math.PI*2;
+  const p = Math.acos(2*Math.random()-1);
+  starPos[i*3] = r*Math.sin(p)*Math.cos(t);
+  starPos[i*3+1] = r*Math.cos(p);
+  starPos[i*3+2] = r*Math.sin(p)*Math.sin(t);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color:0xffeecc, size:.6 })));
+
+// =============================================================================
+// First-person controller — pointer-lock + WASD + run + jump + collide-with-walls
+// =============================================================================
+const player = {
+  pos: new THREE.Vector3(0, 1.7, 5),
+  vel: new THREE.Vector3(),
+  onGround: true,
+  yaw: 0, pitch: 0,
+  speed: 4.5, runSpeed: 8.0
+};
+
+let pointerLocked = false;
+const keys = {};
+
+document.addEventListener('keydown', e => { keys[e.code] = true;
+  if(e.code === 'KeyF'){ if(card.style.display==='block') hideInfoCard(); else tryInspect(); }
+  if(/^Digit[1-9]$/.test(e.code)){
+    const idx = parseInt(e.code.slice(5))-1;
+    pickPathByIndex(idx);
+  }
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+renderer.domElement.addEventListener('click', () => {
+  if(!pointerLocked && !(renderer.xr?.isPresenting)) renderer.domElement.requestPointerLock();
+});
+document.addEventListener('pointerlockchange', () => {
+  pointerLocked = (document.pointerLockElement === renderer.domElement);
+});
+document.addEventListener('mousemove', e => {
+  if(!pointerLocked) return;
+  player.yaw -= e.movementX * .002;
+  player.pitch -= e.movementY * .002;
+  player.pitch = Math.max(-Math.PI/2 + .05, Math.min(Math.PI/2 - .05, player.pitch));
+});
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// =============================================================================
+// Room detection + path picker
+// =============================================================================
+let currentRoomId = null;
+let foundKey = false;
+let tajMahalLoaded = false;  // prevent re-loading the 40 MB GLB
+
+function detectRoom(){
+  let inside = null;
+  for(const r of ROOMS){
+    const [w,d,_] = r.size;
+    const dx = player.pos.x - r.pos[0];
+    const dz = player.pos.z - r.pos[2];
+    if(Math.abs(dx) <= w/2 && Math.abs(dz) <= d/2){
+      inside = r; break;
+    }
+  }
+  if(inside && inside.id !== currentRoomId){
+    currentRoomId = inside.id;
+    onRoomEntered(inside);
+  }
+}
+
+function onRoomEntered(room){
+  document.getElementById('roomName').textContent = room.name;
+  const monumentList = (room.monuments||[]).map(k => MONUMENT_DATA[k]?.title).filter(Boolean).join(' · ');
+  document.getElementById('roomDesc').textContent = monumentList ? `Featuring: ${monumentList}` : 'A connecting hall.';
+  refreshPathPicker(room);
+
+  // Theme transition
+  const theme = ROOM_THEMES[room.theme] || ROOM_THEMES.Default;
+  scene.fog.color.setHex(theme.fog);
+  scene.background.setHex(theme.fog);
+
+  // Hidden treasury key drop
+  if(room.id === 'shards_room' && !foundKey){
+    foundKey = true;
+    showToast("✨ You found the Treasury Key — locked paths are now open");
+  }
+
+  // ── LAZY-LOAD TAJ MAHAL ──────────────────────────────────────────────
+  // Only load the 40 MB GLB once, and only when the user is actually inside
+  // the Indian Hall. Loading it at page start crashes the WebGL context.
+  if(room.id === 'indian_hall' && !tajMahalLoaded){
+    tajMahalLoaded = true;   // flag so we only do this once
+
+    // Load the real photogrammetry texture extracted from the GLB
+    const tajTex = textureLoader.load('images/taj_texture.jpg');
+    const tajMat = new THREE.MeshLambertMaterial({ map: tajTex, color: 0xf4efe6 });
+
+    showToast('Loading Taj Mahal 3D model… (please wait)');
+    gltfLoader.load(
+      'taj%20mahal%20files%20/source/model.glb',
+      (gltf) => {
+        gltf.scene.traverse((child) => {
+          if(child.isMesh){
+            child.material = tajMat;  // real texture, safe shader
+          }
+        });
+        // Scale to fit in the room (target height 5 m)
+        const bbox = new THREE.Box3().setFromObject(gltf.scene);
+        const sz   = bbox.getSize(new THREE.Vector3());
+        if(sz.y > 0.001){
+          const s = 5 / sz.y;
+          gltf.scene.scale.setScalar(s);
+          const ctr = bbox.getCenter(new THREE.Vector3()).multiplyScalar(s);
+          gltf.scene.position.set(
+            ROOMS.find(r=>r.id==='indian_hall').pos[0] - ctr.x,
+            -bbox.min.y * s,
+            ROOMS.find(r=>r.id==='indian_hall').pos[2] - ctr.z
+          );
+        }
+        gltf.scene.userData.monumentKey = 'TajMahal';
+        gltf.scene.userData.autoRotate = true;
+        gltf.scene.userData.rotateSpeed = 0.08;
+        autoRotateObjects.push(gltf.scene);
+        scene.add(gltf.scene);
+        showToast('Taj Mahal loaded ✓');
+      },
+      (xhr) => { if(xhr.total) console.log(`Taj Mahal: ${Math.round(xhr.loaded/xhr.total*100)}%`); },
+      (err) => { console.error('Taj Mahal load error:', err); showToast('Could not load Taj Mahal model'); }
+    );
+  }
+}
+
+function refreshPathPicker(room){
+  const picker = document.getElementById('pathPicker');
+  picker.innerHTML = '';
+  const exits = EDGES.filter(([_,a,b]) => a===room.id || b===room.id);
+  exits.forEach((edge, idx) => {
+    const [eid, a, b, opts] = edge;
+    const otherId = a === room.id ? b : a;
+    const other = ROOMS.find(r => r.id === otherId);
+    if(!other) return;
+    const locked = opts && opts.locked && !foundKey;
+    const btn = document.createElement('button');
+    btn.className = 'path-btn' + (locked ? ' locked':'');
+    btn.innerHTML = `<span>${other.name}</span><span class="meta">${locked?'🔒 Locked':'Path '+(idx+1)+'  →'}</span>`;
+    btn.onclick = () => {
+      if(locked){ showToast("🔒 You need the Treasury Key (find it in Archaeological Shards)"); return; }
+      teleportTo(other);
+    };
+    picker.appendChild(btn);
+  });
+}
+
+function pickPathByIndex(idx){
+  const buttons = document.querySelectorAll('.path-btn');
+  if(buttons[idx]) buttons[idx].click();
+}
+
+function teleportTo(room){
+  player.pos.set(room.pos[0], 1.7, room.pos[2] - room.size[1]/2 + 1.2);
+  player.vel.set(0,0,0);
+  showToast(`→ ${room.name}`);
+}
+
+// =============================================================================
+// Inspect monument
+// =============================================================================
+const card = document.getElementById('infoCard');
+
+function tryInspect(){
+  // Raycast forward from camera
+  const forward = new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);
+  const ray = new THREE.Raycaster(camera.position, forward, 0, 6);
+  const hits = ray.intersectObjects(scene.children, true);
+  for(const h of hits){
+    let o = h.object;
+    while(o){
+      if(o.userData.monumentKey){
+        window._currentMonumentKey = o.userData.monumentKey;
+        // Check if it's an artifact
+        if (window.ARTIFACT_LIBRARY && window.ARTIFACT_LIBRARY.find(a => a.id === o.userData.monumentKey)) {
+          if (window.HeritageUI) window.HeritageUI.showArtifactLibrary();
+        } else if(window.HeritageUI && window.MONUMENT_DATA_RICH?.[o.userData.monumentKey]) {
+          window.HeritageUI.showRichCard(o.userData.monumentKey);
+        } else {
+          showInfoCard(o.userData.monumentKey);
+        }
+        return;
+      }
+      o = o.parent;
+    }
+  }
+  hideInfoCard();
+}
+
+function showInfoCard(key){
+  const m = MONUMENT_DATA[key];
+  if(!m) return;
+  card.innerHTML = `
+    <div class="era">${m.era}</div>
+    <h2>${m.title}</h2>
+    <div class="loc">${m.location}</div>
+    <div class="body">${m.body}</div>
+    <div class="loc" style="margin-top:10px;font-size:11px;color:#dcb574">Press F again to close</div>
+  `;
+  card.style.display = 'block';
+}
+function hideInfoCard(){ card.style.display = 'none'; }
+
+// =============================================================================
+// Toast + minimap
+// =============================================================================
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function showToast(text){
+  toastEl.textContent = text;
+  toastEl.style.opacity = 1;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ toastEl.style.opacity = 0; }, 3500);
+}
+window.showToast = showToast;
+
+const mapCv = document.getElementById('mapCanvas');
+const mapCtx = mapCv.getContext('2d');
+let mapW = 0, mapH = 0;
+function initMapSize(){
+  mapW = mapCv.width  = mapCv.clientWidth  * 2;
+  mapH = mapCv.height = mapCv.clientHeight * 2;
+}
+initMapSize();
+window.addEventListener('resize', initMapSize);
+
+function drawMap(){
+  const W = mapW, H = mapH;
+  mapCtx.clearRect(0,0,W,H);
+  mapCtx.fillStyle = 'rgba(0,0,0,.4)';
+  mapCtx.fillRect(0,0,W,H);
+
+  const minX = -50, maxX = 100, minZ = -10, maxZ = 120;
+  const sx = W/(maxX-minX), sz = H/(maxZ-minZ);
+
+  // edges
+  mapCtx.strokeStyle = 'rgba(220,181,116,.4)';
+  mapCtx.lineWidth = 2;
+  EDGES.forEach(([_, a, b]) => {
+    const ra = ROOMS.find(r=>r.id===a), rb = ROOMS.find(r=>r.id===b);
+    if(!ra || !rb) return;
+    mapCtx.beginPath();
+    mapCtx.moveTo((ra.pos[0]-minX)*sx, (ra.pos[2]-minZ)*sz);
+    mapCtx.lineTo((rb.pos[0]-minX)*sx, (rb.pos[2]-minZ)*sz);
+    mapCtx.stroke();
+  });
+  // rooms
+  ROOMS.forEach(r => {
+    const isCur = r.id === currentRoomId;
+    mapCtx.fillStyle = isCur ? '#dcb574' : 'rgba(180,180,200,.6)';
+    mapCtx.beginPath();
+    mapCtx.arc((r.pos[0]-minX)*sx, (r.pos[2]-minZ)*sz, isCur?7:4, 0, Math.PI*2);
+    mapCtx.fill();
+  });
+  // player
+  mapCtx.fillStyle = '#fff';
+  mapCtx.beginPath();
+  mapCtx.arc((player.pos.x-minX)*sx, (player.pos.z-minZ)*sz, 3, 0, Math.PI*2);
+  mapCtx.fill();
+}
+
+// =============================================================================
+// Animation loop
+// =============================================================================
+const clock = new THREE.Clock();
+
+function update(dt){
+  // Movement (zero-alloc using pre-pooled vectors)
+  const speed = (keys['ShiftLeft'] || keys['ShiftRight']) ? player.runSpeed : player.speed;
+  _fwd.set(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+  _right.set(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+  _move.set(0, 0, 0);
+  if(keys['KeyW']) _move.add(_fwd);
+  if(keys['KeyS']) _move.sub(_fwd);
+  if(keys['KeyD']) _move.add(_right);
+  if(keys['KeyA']) _move.sub(_right);
+  if(_move.lengthSq() > 0) _move.normalize().multiplyScalar(speed * dt);
+
+  // Slide against walls (X then Z)
+  _nextX.copy(player.pos); _nextX.x += _move.x;
+  if(!collides(_nextX)) player.pos.x = _nextX.x;
+  _nextZ.copy(player.pos); _nextZ.z += _move.z;
+  if(!collides(_nextZ)) player.pos.z = _nextZ.z;
+
+  // Jump / gravity
+  if(keys['Space'] && player.onGround){ player.vel.y = 4.5; player.onGround = false; }
+  player.vel.y -= 9.8 * dt;
+  player.pos.y += player.vel.y * dt;
+  if(player.pos.y < 1.7){ player.pos.y = 1.7; player.vel.y = 0; player.onGround = true; }
+
+  camera.position.copy(player.pos);
+  camera.rotation.order = 'YXZ';
+  camera.rotation.y = player.yaw;
+  camera.rotation.x = player.pitch;
+
+  // Rotate only monument objects (NOT full scene traverse)
+  for(let i = 0; i < autoRotateObjects.length; i++){
+    autoRotateObjects[i].rotation.y += autoRotateObjects[i].userData.rotateSpeed * dt;
+  }
+
+  detectRoom();
+  drawMap();
+}
+
+function collides(p){
+  // Allow movement if inside any room or hallway corridor
+  for(const r of ROOMS){
+    const [w,d,_] = r.size;
+    const dx = p.x - r.pos[0];
+    const dz = p.z - r.pos[2];
+    if(Math.abs(dx) <= w/2 - .8 && Math.abs(dz) <= d/2 - .8) return false;
+  }
+  // Hallways: a 1.5-meter-wide tube between any two connected rooms
+  for(const [_, a, b] of EDGES){
+    const ra = ROOM_BY_ID[a], rb = ROOM_BY_ID[b];
+    if(!ra||!rb) continue;
+    const ax=ra.pos[0], az=ra.pos[2], bx=rb.pos[0], bz=rb.pos[2];
+    const dx=bx-ax, dz=bz-az;
+    const len2 = dx*dx + dz*dz;
+    const t = ((p.x-ax)*dx + (p.z-az)*dz) / len2;
+    if(t<0||t>1) continue;
+    const cx = ax + dx*t, cz = az + dz*t;
+    const distSq = (p.x-cx)*(p.x-cx) + (p.z-cz)*(p.z-cz);
+    if(distSq < 1.6*1.6) return false;
+  }
+  return true;
+}
+
+renderer.setAnimationLoop(()=>{
+  const dt = Math.min(clock.getDelta(), .05);
+  update(dt);
+  renderer.render(scene, camera);
+});
+
+// =============================================================================
+// Intro screen + WebXR button
+// =============================================================================
+document.getElementById('startBtn').onclick = async () => {
+  document.getElementById('intro').style.opacity = '0';
+  setTimeout(()=>{
+    document.getElementById('intro').style.display = 'none';
+    ['hud','legend','crosshair'].forEach(id => document.getElementById(id).style.display='block');
+    detectRoom();
+    renderer.domElement.requestPointerLock();
+  }, 800);
+};
+
+if('xr' in navigator){
+  navigator.xr.isSessionSupported('immersive-vr').then(supported => {
+    if(supported){
+      const btn = document.getElementById('vrButton');
+      btn.style.display = 'block';
+      btn.onclick = async () => {
+        const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures:['local-floor','bounded-floor'] });
+        renderer.xr.setSession(session);
+      };
+    }
+  }).catch(()=>{});
+}
+
+// On load: kick the renderer to fill any layout glitches
+window.dispatchEvent(new Event('resize'));
+</script>
+</body>
+</html>
