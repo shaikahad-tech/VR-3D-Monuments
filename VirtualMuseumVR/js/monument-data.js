@@ -218,6 +218,151 @@ window.MONUMENT_DATA_RICH = {
       {q:"What problem did the curved profile of the Eiffel Tower solve?",a:"Wind resistance",options:["Earthquake resistance","Wind resistance","Weight distribution","Foundation stability"]},
       {q:"How many rivets are in the Eiffel Tower?",a:"2.5 million",options:["500,000","2.5 million","10 million","1.2 million"]}
     ]
+  },
+  HampiChariot: {
+    title:"Stone Chariot, Hampi", era:"15th–16th C. CE (Vijayanagara)", location:"Hampi, Karnataka, India", color:0xa68c66,
+    architect:"Vijayanagara Empire master sculptors under Krishna Deva Raya",
+    style:"Dravidian — Vijayanagara period temple art",
+    components:["Monolithic stone chariot (Garuda Ratha)","Four ornamental wheels (functional rotation)","Carved elephant balustrades","Mandapa (pillared hall) atop chariot","Shikhara-style vimana roof","Detachable stone wheels"],
+    materials:"Grey-green granite; carved from a single geological outcrop; lime mortar jointing",
+    purpose:"Shrine to Garuda (Vishnu's vahana) within the Vittala Temple complex; processional chariot form symbolizes divine vehicle",
+    dynasty:"Vijayanagara Empire — Tuluva Dynasty",
+    narration:"This stone chariot is actually a shrine to Garuda, the eagle-mount of Lord Vishnu. Built in the 15th century within the Vittala Temple complex, its four wheels once turned on their axles — a remarkable feat of monolithic stone engineering. The entire chariot was carved from local granite, and the level of detail in the spokes, hub caps, and floral motifs rivals anything produced in marble.",
+    artifacts:[
+      {name:"Musical Pillar",type:"architecture",material:"Granite",origin:"Vittala Temple mandapa",usage:"Pillars that produce musical notes when struck",symbolism:"Demonstrates mastery of acoustics in stone — each pillar tuned to a different note of the Indian raga system"},
+      {name:"Garuda Idol Fragment",type:"sculpture",material:"Black granite",origin:"Interior of the stone chariot",usage:"Devotional idol",symbolism:"Garuda symbolizes speed, power, and martial prowess — protector against serpents (nagas)"}
+    ],
+    quiz:[
+      {q:"Which deity's vehicle (vahana) is the stone chariot dedicated to?",a:"Garuda (Vishnu's eagle mount)",options:["Nandi (Shiva's bull)","Garuda (Vishnu's eagle mount)","Hamsa (Brahma's swan)","Airavata (Indra's elephant)"]},
+      {q:"What is remarkable about the chariot's wheels?",a:"They could actually rotate on their stone axles",options:["They are painted gold","They could actually rotate on their stone axles","They contain hidden chambers","They are made of metal"]}
+    ]
+  },
+  KonarkSunTemple: {
+    title:"Konark Sun Temple", era:"1250 CE (Eastern Ganga Dynasty)", location:"Konark, Odisha, India", color:0x8c6648,
+    architect:"King Narasimhadeva I; designed by architect Bisu Maharana",
+    style:"Kalinga Architecture — Nagara (North Indian temple style)",
+    components:["24 elaborately carved wheels (sundial function)","7 horses pulling the chariot eastward","Jagamohana (assembly hall — surviving)","Deul (main sanctuary — collapsed)","Natya Mandapa (dance hall)","Chlorite stone erotic sculptures","Three-tier Pidha Deula roof"],
+    materials:"Khondalite stone (iron-rich, weathers to rust color); chlorite; laterite; iron beams (internal framework)",
+    purpose:"Temple dedicated to Surya (Sun God); designed as a colossal stone chariot carrying the sun across the sky; astronomical observatory",
+    dynasty:"Eastern Ganga Dynasty",
+    narration:"The Konark Sun Temple is a colossal chariot designed to carry the sun god Surya across the sky. Its 24 wheels are not merely decorative — each functions as a sundial, with the shadow cast by the spokes accurately telling the time of day to within a minute. Seven horses strain eastward, pulling the chariot toward the dawn. The now-collapsed main tower once rose over 60 meters — deliberately designed so that the first rays of sunrise would illuminate the sanctum.",
+    artifacts:[
+      {name:"Sundial Wheel",type:"architecture",material:"Khondalite stone",origin:"Temple platform",usage:"Each wheel is a functioning sundial — the shadow of the axle hub on the spokes tells the time",symbolism:"The cycle of time (kalachakra); each wheel represents one hour of the day"},
+      {name:"Surya Idol",type:"sculpture",material:"Chlorite (greenish stone)",origin:"Temple sanctum",usage:"Primary deity — Sun God depicted with boots (possibly Persian influence)",symbolism:"Surya drives his chariot across the sky each day; depicted with 7 horses representing 7 days of the week"},
+      {name:"Naga-Nagi Relief",type:"sculpture",material:"Khondalite",origin:"Temple exterior walls",usage:"Decorative/mythological panel",symbolism:"Serpent deities guarding the temple — fertility and protection symbolism"}
+    ],
+    quiz:[
+      {q:"How many wheels does the Konark chariot have?",a:"24 (representing 24 hours)",options:["12","24 (representing 24 hours)","7","365"]},
+      {q:"What practical function do the carved wheels serve?",a:"They function as sundials",options:["Water collection","They function as sundials","Structural support","Musical instruments"]}
+    ]
+  },
+  AjantaCaves: {
+    title:"Ajanta Caves", era:"2nd C. BCE – 5th C. CE", location:"Aurangabad, Maharashtra, India", color:0x806b59,
+    architect:"Buddhist monk-artists across 700 years (Satavahana & Vakataka periods)",
+    style:"Rock-cut Buddhist architecture — Chaitya halls and Viharas",
+    components:["30 rock-cut caves in horseshoe cliff","Chaitya grihas (prayer halls with stupa)","Viharas (monasteries with cells)","Horseshoe-arch facades (gavaksha)","Elaborate mural paintings","Sculpted Buddha and Bodhisattva figures","Pillared porticos"],
+    materials:"Basalt cliff face (Deccan Traps volcanic rock); natural mineral pigments for murals (lapis lazuli blue, red ochre, lamp black); lime plaster ground",
+    purpose:"Buddhist monastery and prayer complex; retreat for monks during monsoon season (Chaturmas); artistic expression of Jataka tales",
+    dynasty:"Satavahana Dynasty (early caves); Vakataka Dynasty (later caves, including the famous murals)",
+    narration:"The Ajanta Caves were carved over seven centuries into a horseshoe-shaped cliff above the Waghora River. Lost to the jungle for over a thousand years, they were rediscovered by a British hunting party in 1819. The murals inside Cave 1 and Cave 2 are among the finest surviving examples of ancient Indian painting. The artists used natural pigments — lapis lazuli for blue, red ochre, lamp black — applied to lime plaster in a technique similar to European fresco.",
+    artifacts:[
+      {name:"Padmapani Bodhisattva Mural",type:"painting",material:"Natural pigments on lime plaster",origin:"Cave 1, Ajanta",usage:"Devotional wall painting",symbolism:"Avalokiteshvara holding a lotus — the embodiment of compassion; considered the finest single figure in all of Indian art"},
+      {name:"Carved Stupa",type:"architecture",material:"Basalt (carved in-situ)",origin:"Cave 19 Chaitya hall",usage:"Object of circumambulation (pradakshina) for meditation",symbolism:"Represents the Buddha's presence; the dome symbolizes the cosmos, the harmika above it the heavenly realm"}
+    ],
+    quiz:[
+      {q:"How were the Ajanta Caves rediscovered?",a:"By a British hunting party in 1819",options:["By local farmers","By a British hunting party in 1819","By archaeologists in 1905","They were never lost"]},
+      {q:"What type of rock are the caves carved from?",a:"Basalt from the Deccan Traps",options:["Limestone","Sandstone","Basalt from the Deccan Traps","Granite"]}
+    ]
+  },
+  ChristTheRedeemer: {
+    title:"Christ the Redeemer", era:"1922–1931 CE", location:"Rio de Janeiro, Brazil", color:0xdcd6cc,
+    architect:"Heitor da Silva Costa (design); Paul Landowski (sculpture); Gheorghe Leonida (face)",
+    style:"Art Deco — monumental figurative sculpture",
+    components:["Reinforced concrete statue","Soapstone mosaic exterior tiles","Internal steel framework","Pedestal chapel (Nossa Senhora Aparecida)","Observation deck at base","Lightning rod system (struck 3-6 times per year)"],
+    materials:"Reinforced concrete skeleton; outer layer of over 6 million hand-cut soapstone triangle tiles; steel internal frame",
+    purpose:"Symbol of Christianity and cultural icon of Brazil; votive offering from the Catholic community",
+    dynasty:"Brazilian First Republic / Vargas Era",
+    narration:"Christ the Redeemer stands 30 meters tall atop Corcovado mountain, 700 meters above Rio's harbor. The statue is covered in over 6 million tiny triangular soapstone tiles, each cut and placed by hand. Its arms span 28 meters — not outstretched in benediction as commonly believed, but in the Brazilian gesture of embrace. The statue is struck by lightning 3 to 6 times every year; in 2014, a bolt chipped the tip of the right thumb.",
+    artifacts:[
+      {name:"Soapstone Tile Sample",type:"building material",material:"Soapstone (pedra-sabão)",origin:"Quarries of Minas Gerais, Brazil",usage:"6 million tiles covering the statue exterior",symbolism:"Chosen for its durability against tropical weather and its soft, warm color that glows at sunset"},
+      {name:"Original Scale Model",type:"model",material:"Plaster",origin:"Paul Landowski's Paris studio, 1924",usage:"1:10 scale reference for the construction team",symbolism:"The face was sculpted by Romanian artist Gheorghe Leonida — its serene expression took months to finalize"}
+    ],
+    quiz:[
+      {q:"What material covers the exterior of Christ the Redeemer?",a:"Soapstone tiles",options:["White marble","Soapstone tiles","Painted concrete","Ceramic tiles"]},
+      {q:"How wide is the arm span of the statue?",a:"28 meters",options:["15 meters","28 meters","40 meters","20 meters"]}
+    ]
+  },
+  StatueOfLiberty: {
+    title:"Statue of Liberty", era:"1875–1886 CE", location:"Liberty Island, New York, USA", color:0x66c6a6,
+    architect:"Frédéric Auguste Bartholdi (sculptor); Alexandre Gustave Eiffel (structural engineer)",
+    style:"Neoclassical — colossal figurative sculpture",
+    components:["Copper outer skin (2.4mm thick)","Wrought-iron armature (Eiffel design)","Torch with gold-leaf flame","Tabula ansata (tablet with date July 4, 1776)","Seven-ray crown (7 continents/oceans)","Pedestal (Richard Morris Hunt, architect)","Fort Wood (11-point star base)"],
+    materials:"Copper sheets (300 total, 2.4mm thick — now oxidized to green patina); wrought-iron skeleton; concrete and granite pedestal",
+    purpose:"Gift from France celebrating Franco-American friendship and republican ideals; beacon for immigrants arriving by sea",
+    dynasty:"French Third Republic / United States Gilded Age",
+    narration:"The Statue of Liberty's green color is not paint — it's patina. The 2.4mm-thick copper skin has oxidized over 130 years to form a protective layer of copper carbonate. Beneath the skin, Gustave Eiffel — yes, the same engineer — designed an internal iron skeleton using a revolutionary system of flexible iron bars that allows the copper skin to move independently of the frame, preventing cracking in high winds.",
+    artifacts:[
+      {name:"Broken Chain at Feet",type:"sculpture element",material:"Copper",origin:"Base of the statue",usage:"Largely invisible from ground level — a broken chain lies at Liberty's feet",symbolism:"Abolition of slavery — Bartholdi originally wanted Liberty to hold the chains, but changed to a subtle placement"},
+      {name:"Original Torch",type:"architectural element",material:"Copper with amber glass panels",origin:"Replaced in 1986",usage:"Now displayed in the museum lobby",symbolism:"The original flame was modified with windows in 1916; the replacement is clad in 24-karat gold leaf"}
+    ],
+    quiz:[
+      {q:"Who designed the internal iron framework of the Statue of Liberty?",a:"Gustave Eiffel",options:["Frédéric Bartholdi","Gustave Eiffel","Richard Morris Hunt","Auguste Rodin"]},
+      {q:"What do the seven rays of the crown represent?",a:"The seven continents and oceans",options:["The seven deadly sins","The seven days of the week","The seven continents and oceans","The seven French republics"]}
+    ]
+  },
+  EasterIslandMoai: {
+    title:"Moai of Rapa Nui", era:"1250–1500 CE", location:"Easter Island (Rapa Nui), Chile", color:0x736659,
+    architect:"Rapa Nui master carvers — each village sponsored its own moai",
+    style:"Polynesian monumental sculpture — ancestor veneration",
+    components:["Elongated head (represents ancestral mana)","Deep-set eye sockets (coral and obsidian eyes added post-transport)","Heavy brow ridge","Long nose and thin lips","Truncated torso with hands on belly","Pukao (red scoria topknot)","Ahu (stone platform base)"],
+    materials:"Tuff (compressed volcanic ash from Rano Raraku quarry); pukao carved from red scoria of Puna Pau quarry; coral and obsidian for eyes",
+    purpose:"Ancestor worship — each moai embodies the mana (spiritual power) of a deceased chief, protecting the village from the ahu platform",
+    dynasty:"Rapa Nui civilization (Polynesian)",
+    narration:"The moai were not dragged horizontally — they walked. Recent experiments have demonstrated that by rocking a standing moai back and forth with ropes attached to its head, a team of 18 people can 'walk' a 5-ton statue several hundred meters per day. The statues face inland, watching over their village. Only the seven moai of Ahu Akivi face the sea — they are said to represent the seven original explorers sent by King Hotu Matua.",
+    artifacts:[
+      {name:"Coral Eye with Obsidian Pupil",type:"ritual object",material:"White coral disk with red scoria iris and obsidian pupil",origin:"Excavated from fallen moai at Anakena",usage:"Inserted into the moai's eye socket to 'activate' its mana (spiritual power)",symbolism:"The moai was considered spiritually inert until its eyes were placed — the ceremony was called 'opening the eyes'"},
+      {name:"Rongorongo Tablet",type:"inscription",material:"Wooden tablet with shark-tooth stylus incisions",origin:"Rapa Nui, undeciphered script",usage:"Unknown — possibly genealogical or astronomical records",symbolism:"One of the few examples of writing independently invented in Polynesia — still undeciphered"}
+    ],
+    quiz:[
+      {q:"How were the moai transported from the quarry?",a:"'Walked' upright using ropes to rock them forward",options:["Dragged on wooden sledges","Rolled on logs","'Walked' upright using ropes to rock them forward","Carried by hundreds of workers"]},
+      {q:"Which direction do most moai face?",a:"Inland, watching over their village",options:["Out to sea","Inland, watching over their village","South toward Antarctica","Toward the quarry"]}
+    ]
+  },
+  LeaningTowerPisa: {
+    title:"Leaning Tower of Pisa", era:"1173–1372 CE (Romanesque)", location:"Pisa, Italy", color:0xf0ebdc,
+    architect:"Bonanno Pisano (attributed, disputed); completed by Tommaso di Andrea Pisano",
+    style:"Italian Romanesque — free-standing campanile",
+    components:["Blind arcade base storey","Six open loggia stories (30 columns each)","Belfry (bell chamber, 7 bells)","198 columns total","Internal spiral staircase (294 steps)","Marble exterior cladding"],
+    materials:"White Carrara marble (exterior); grey Verrucano limestone (structure); soft clay subsoil (cause of lean)",
+    purpose:"Bell tower (campanile) for Pisa Cathedral; civic prestige symbol of the Pisan Republic's maritime wealth",
+    dynasty:"Republic of Pisa",
+    narration:"Construction of the tower began in 1173 and the lean appeared almost immediately — by the time the third storey was complete, the foundation on the south side had sunk into the soft clay. Construction stopped for almost a century, which may have saved the tower — the pause allowed the soil to settle and strengthen. When building resumed, engineers deliberately made the upper stories slightly taller on the south side to compensate, giving the tower a subtle banana curve.",
+    artifacts:[
+      {name:"Bell 'Assunta' (largest bell)",type:"instrument",material:"Bronze",origin:"Cast in 1655",usage:"Largest of the seven bells — each tuned to a musical note of the major scale",symbolism:"The bells were silenced for decades over fears that their vibration would worsen the lean"},
+      {name:"Galileo's Pendulum Experiment (commemorative)",type:"scientific",material:"Iron weights and rope",origin:"Legendary experiment, c. 1589",usage:"Galileo reportedly dropped two spheres of different mass from the tower to demonstrate they fall at equal speed",symbolism:"Foundational experiment in modern physics — though historians debate whether it actually occurred here"}
+    ],
+    quiz:[
+      {q:"What caused the tower to lean?",a:"Soft clay subsoil on the south side",options:["An earthquake","Soft clay subsoil on the south side","Poor quality marble","Intentional design"]},
+      {q:"What is the tower's current lean angle?",a:"About 3.99 degrees",options:["About 3.99 degrees","About 10 degrees","About 1 degree","About 7 degrees"]}
+    ]
+  },
+  SydneyOperaHouse: {
+    title:"Sydney Opera House", era:"1959–1973 CE", location:"Sydney, New South Wales, Australia", color:0xf5f5f3,
+    architect:"Jørn Utzon (original design); completed by Peter Hall",
+    style:"Expressionist / Organic Modern — shell structure",
+    components:["Interlocking roof shells (derived from segments of a single sphere)","Chevron-pattern glass curtain walls","Monumental podium (Bennelong Point)","Concert Hall (2,679 seats)","Joan Sutherland Theatre (1,507 seats)","Forecourt and Monumental Steps","Over 1 million Swedish roof tiles"],
+    materials:"Precast concrete ribs clad in 1,056,006 Swedish-made ceramic tiles (cream and matte white chevron pattern); pink granite podium; laminated timber and birch plywood interiors",
+    purpose:"Multi-venue performing arts centre; national icon and UNESCO World Heritage Site",
+    dynasty:"Modern Australia",
+    narration:"Utzon's original design was deemed 'unbuildable' — no engineer could calculate how to construct the free-form shells. The breakthrough came when Utzon realized that every shell could be cut from the surface of a single sphere of uniform radius (75.2 meters). This meant that all 2,194 precast concrete ribs could be manufactured using the same mould — a manufacturing revolution. Utzon resigned before completion due to political disputes, and never saw the finished interior.",
+    artifacts:[
+      {name:"Utzon's Spherical Geometry Drawing",type:"architectural drawing",material:"Ink on tracing paper",origin:"Utzon's Hellebæk studio, 1961",usage:"The famous diagram showing how every roof shell derives from a sphere of 75.2m radius",symbolism:"The geometric insight that made the 'impossible' design buildable — one of architecture's eureka moments"},
+      {name:"Swedish Roof Tile Sample",type:"building material",material:"Glazed ceramic (Höganäs, Sweden)",origin:"Höganäs factory, Sweden",usage:"1,056,006 tiles in a cream/matte white chevron pattern",symbolism:"Self-cleaning due to glazed surface — they look as pristine today as in 1973"}
+    ],
+    quiz:[
+      {q:"What geometric insight made the Opera House shells buildable?",a:"All shells are segments of a single sphere",options:["Each shell has a unique curvature","All shells are segments of a single sphere","They are parabolic curves","They used flexible formwork"]},
+      {q:"How many roof tiles cover the Sydney Opera House?",a:"Over 1 million",options:["100,000","Over 1 million","500,000","5 million"]}
+    ]
   }
 };
 

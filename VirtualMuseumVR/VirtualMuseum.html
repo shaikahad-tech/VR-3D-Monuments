@@ -9,53 +9,103 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{width:100%;height:100%;overflow:hidden;background:#050608;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
   canvas{display:block}
-  #hud{position:fixed;top:14px;left:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);max-width:340px;pointer-events:none}
+  #hud{position:fixed;top:14px;left:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);max-width:360px;pointer-events:none;z-index:50}
   #hud h1{font-size:13px;letter-spacing:1.6px;text-transform:uppercase;color:#dcb574;margin-bottom:6px}
   #hud .room-name{font-size:18px;font-weight:600;color:#fff}
   #hud .desc{font-size:12px;color:#bbb;margin-top:6px;line-height:1.4}
-  #pathPicker{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:90vw}
+  #progressBar{margin-top:10px;background:rgba(255,255,255,.06);border-radius:10px;height:6px;overflow:hidden}
+  #progressFill{height:100%;background:linear-gradient(90deg,#dcb574,#e8c987);border-radius:10px;transition:width .6s ease;width:0%}
+  #progressLabel{font-size:10px;color:#888;margin-top:4px;letter-spacing:0.5px}
+  #pathPicker{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:90vw;z-index:50}
   .path-btn{background:rgba(220,181,116,.12);border:1px solid rgba(220,181,116,.4);color:#dcb574;padding:10px 16px;border-radius:30px;font-size:13px;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px);pointer-events:auto;font-weight:500}
   .path-btn:hover{background:rgba(220,181,116,.25);transform:translateY(-2px);box-shadow:0 6px 20px rgba(220,181,116,.2)}
   .path-btn .meta{display:block;font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:1px}
   .path-btn.locked{opacity:.4;cursor:not-allowed;border-color:#555;color:#777}
-  #legend{position:fixed;top:14px;right:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);font-size:11px;line-height:1.7;color:#bbb;max-width:230px}
+  #legend{position:fixed;top:14px;right:14px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);font-size:11px;line-height:1.7;color:#bbb;max-width:230px;z-index:50}
   #legend b{color:#dcb574;letter-spacing:1px;font-size:10px;text-transform:uppercase}
   kbd{display:inline-block;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.1);font-family:monospace;font-size:10px;color:#fff;margin:0 2px}
-  #infoCard{position:fixed;top:50%;right:16px;transform:translateY(-50%);background:rgba(8,10,14,.92);backdrop-filter:blur(20px);padding:18px 22px;border-radius:16px;border:1px solid rgba(220,181,116,.3);max-width:300px;display:none;pointer-events:none;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  #infoCard{position:fixed;top:50%;right:16px;transform:translateY(-50%);background:rgba(8,10,14,.92);backdrop-filter:blur(20px);padding:18px 22px;border-radius:16px;border:1px solid rgba(220,181,116,.3);max-width:300px;display:none;pointer-events:auto;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:60}
   #infoCard h2{font-size:18px;color:#fff;margin-bottom:4px}
   #infoCard .era{font-size:11px;color:#dcb574;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
   #infoCard .loc{font-size:13px;color:#bbb;margin-bottom:10px}
   #infoCard .body{font-size:12px;color:#aaa;line-height:1.5}
-  #map{position:fixed;bottom:90px;right:14px;width:200px;height:200px;background:rgba(8,10,14,.78);backdrop-filter:blur(10px);border-radius:14px;border:1px solid rgba(255,255,255,.08);padding:6px}
+  #map{position:fixed;bottom:90px;right:14px;width:220px;height:220px;background:rgba(8,10,14,.82);backdrop-filter:blur(10px);border-radius:14px;border:1px solid rgba(255,255,255,.08);padding:6px;z-index:50}
   #map canvas{width:100%;height:100%}
-  #vrButton{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.18);border:1px solid #dcb574;color:#dcb574;padding:10px 22px;border-radius:30px;font-size:13px;cursor:pointer;font-weight:600;letter-spacing:1.5px}
+  #vrButton{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.18);border:1px solid #dcb574;color:#dcb574;padding:10px 22px;border-radius:30px;font-size:13px;cursor:pointer;font-weight:600;letter-spacing:1.5px;z-index:50}
   #vrButton:hover{background:rgba(220,181,116,.3)}
   #vrButton:disabled{opacity:.4;cursor:not-allowed}
-  #toast{position:fixed;top:78px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.92);color:#1a1208;padding:8px 18px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none}
-  #intro{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a1208 0%,#050608 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:100;transition:opacity .8s}
-  #intro h1{font-size:48px;color:#dcb574;letter-spacing:6px;margin-bottom:16px;font-weight:300}
-  #intro p{color:#888;font-size:15px;margin-bottom:8px;max-width:560px;line-height:1.6}
-  #intro .start{margin-top:30px;background:#dcb574;color:#1a1208;border:none;padding:14px 38px;border-radius:30px;font-size:14px;letter-spacing:2px;font-weight:700;cursor:pointer}
-  #intro .start:hover{background:#e8c987}
-  #crosshair{position:fixed;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);pointer-events:none;transform:translate(-50%,-50%)}
+  #toast{position:fixed;top:78px;left:50%;transform:translateX(-50%);background:rgba(220,181,116,.92);color:#1a1208;padding:8px 18px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:70}
+  #fadeOverlay{position:fixed;inset:0;background:#050608;opacity:0;pointer-events:none;transition:opacity .6s ease;z-index:80}
+  #crosshair{position:fixed;left:50%;top:50%;width:2px;height:2px;pointer-events:none;transform:translate(-50%,-50%);z-index:40}
+  #crosshair::before,#crosshair::after{content:'';position:absolute;background:rgba(255,255,255,.5)}
+  #crosshair::before{width:12px;height:1px;top:0;left:-5px}
+  #crosshair::after{width:1px;height:12px;top:-5px;left:0}
+
+  /* Intro screen — cinematic */
+  @keyframes starDrift{0%{transform:translateY(0)}100%{transform:translateY(-30px)}}
+  @keyframes borderGlow{0%{border-color:rgba(220,181,116,.2)}50%{border-color:rgba(220,181,116,.6)}100%{border-color:rgba(220,181,116,.2)}}
+  @keyframes pulseBtn{0%{box-shadow:0 0 0 0 rgba(220,181,116,.5)}70%{box-shadow:0 0 0 14px rgba(220,181,116,0)}100%{box-shadow:0 0 0 0 rgba(220,181,116,0)}}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  #intro{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a1208 0%,#050608 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;z-index:100;transition:opacity .8s;overflow:hidden}
+  #intro .starfield{position:absolute;inset:0;overflow:hidden}
+  #intro .starfield span{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:starDrift 8s linear infinite}
+  #intro .inner{position:relative;z-index:2;border:1px solid rgba(220,181,116,.3);border-radius:24px;padding:48px 56px;animation:borderGlow 4s ease-in-out infinite,fadeInUp .8s ease}
+  #intro h1{font-size:52px;color:#dcb574;letter-spacing:8px;margin-bottom:6px;font-weight:200;text-shadow:0 0 40px rgba(220,181,116,.3)}
+  #intro .subtitle{font-size:14px;color:#dcb574;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;opacity:.7}
+  #intro p{color:#888;font-size:14px;margin-bottom:6px;max-width:500px;line-height:1.6}
+  #intro .stats{display:flex;gap:24px;margin-top:12px;margin-bottom:6px}
+  #intro .stat{text-align:center}
+  #intro .stat .num{font-size:28px;color:#dcb574;font-weight:300}
+  #intro .stat .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+  #intro .start{margin-top:28px;background:linear-gradient(135deg,#dcb574,#c9a05e);color:#1a1208;border:none;padding:16px 42px;border-radius:30px;font-size:14px;letter-spacing:3px;font-weight:700;cursor:pointer;animation:pulseBtn 2s infinite;transition:transform .2s}
+  #intro .start:hover{background:linear-gradient(135deg,#e8c987,#dcb574);transform:scale(1.05)}
 </style>
 <script src="js/monument-data.js"></script>
 <script src="js/heritage-ui.js"></script>
+<script src="js/audio-system.js"></script>
 </head>
 <body>
 
 <div id="intro">
-  <h1>VIRTUAL MUSEUM</h1>
-  <p>An immersive walking tour of 20 world-heritage monuments across 14 themed rooms.</p>
-  <p>Move with <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>, look around with the mouse, and pick a path at every junction.</p>
-  <button class="start" id="startBtn">ENTER MUSEUM</button>
+  <div class="starfield" id="starfield"></div>
+  <div class="inner">
+    <h1>VIRTUAL MUSEUM</h1>
+    <div class="subtitle">World Heritage Immersive Tour</div>
+    <p>Walk through 20 world-heritage monuments across 17 themed rooms. Inspect artifacts, hear narrations, and test your knowledge.</p>
+    <p>Move with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, look with mouse, press <kbd>F</kbd> to inspect.</p>
+    <div class="stats">
+      <div class="stat"><div class="num">20</div><div class="lbl">Monuments</div></div>
+      <div class="stat"><div class="num">17</div><div class="lbl">Rooms</div></div>
+      <div class="stat"><div class="num">10</div><div class="lbl">Artifacts</div></div>
+    </div>
+    <button class="start" id="startBtn">ENTER MUSEUM</button>
+  </div>
 </div>
+<script>
+// Generate starfield
+(()=>{
+  const sf = document.getElementById('starfield');
+  for(let i=0;i<120;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.opacity = Math.random()*0.6+0.2;
+    s.style.animationDelay = Math.random()*8+'s';
+    s.style.animationDuration = (6+Math.random()*6)+'s';
+    s.style.width = s.style.height = (1+Math.random()*2)+'px';
+    sf.appendChild(s);
+  }
+})();
+</script>
 
 <div id="hud" style="display:none">
   <h1>NOW VISITING</h1>
   <div class="room-name" id="roomName">—</div>
   <div class="desc" id="roomDesc">—</div>
+  <div id="progressBar"><div id="progressFill"></div></div>
+  <div id="progressLabel">0/17 rooms · 0/20 monuments</div>
 </div>
+<div id="fadeOverlay"></div>
 
 <div id="legend" style="display:none">
   <b>Controls</b><br/>
@@ -223,13 +273,69 @@ const floorTextures = {
 };
 Object.values(floorTextures).forEach(t=>{ t.repeat.set(5,5); });
 
-// Lighting — simple hemisphere + directional, no shadows
+// Lighting — hemisphere + directional + ambient
 const hemi = new THREE.HemisphereLight(0x8899bb, 0x334422, 0.8);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff1d9, 1.1);
 sun.position.set(40, 60, 30);
 scene.add(sun);
 scene.add(new THREE.AmbientLight(0x334455, 0.6));
+
+// =============================================================================
+// Floating Dust Particle System (global atmosphere)
+// =============================================================================
+const dustCount = 600;
+const dustGeo = new THREE.BufferGeometry();
+const dustPositions = new Float32Array(dustCount * 3);
+const dustVelocities = new Float32Array(dustCount * 3);
+for(let i = 0; i < dustCount; i++){
+  dustPositions[i*3]   = (Math.random()-0.5) * 200;
+  dustPositions[i*3+1] = Math.random() * 12;
+  dustPositions[i*3+2] = (Math.random()-0.5) * 200;
+  dustVelocities[i*3]   = (Math.random()-0.5) * 0.02;
+  dustVelocities[i*3+1] = Math.random() * 0.01 + 0.003;
+  dustVelocities[i*3+2] = (Math.random()-0.5) * 0.02;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+const dustMat = new THREE.PointsMaterial({ color: 0xffe8c8, size: 0.06, transparent: true, opacity: 0.4 });
+const dustParticles = new THREE.Points(dustGeo, dustMat);
+scene.add(dustParticles);
+
+function updateDust(dt){
+  const pos = dustGeo.attributes.position.array;
+  for(let i = 0; i < dustCount; i++){
+    pos[i*3]   += dustVelocities[i*3]   + Math.sin(performance.now()*0.0003 + i) * 0.002;
+    pos[i*3+1] += dustVelocities[i*3+1];
+    pos[i*3+2] += dustVelocities[i*3+2] + Math.cos(performance.now()*0.0004 + i) * 0.002;
+    if(pos[i*3+1] > 10){ pos[i*3+1] = 0; pos[i*3] = player.pos.x + (Math.random()-0.5)*40; pos[i*3+2] = player.pos.z + (Math.random()-0.5)*40; }
+  }
+  dustGeo.attributes.position.needsUpdate = true;
+}
+
+// =============================================================================
+// Progress Tracking System
+// =============================================================================
+const visitedRooms = new Set();
+const discoveredMonuments = new Set();
+let totalMonumentCount = 0;
+ROOMS.forEach(r => { totalMonumentCount += (r.monuments||[]).length; });
+
+function updateProgress(){
+  const roomPct = (visitedRooms.size / ROOMS.length) * 100;
+  document.getElementById('progressFill').style.width = roomPct + '%';
+  document.getElementById('progressLabel').textContent = `${visitedRooms.size}/${ROOMS.length} rooms · ${discoveredMonuments.size}/${totalMonumentCount} monuments`;
+}
+
+// =============================================================================
+// Fog Lerp Target (smooth room transitions)
+// =============================================================================
+const fogTarget = { color: new THREE.Color(0x0a0c10), near: 40, far: 120 };
+const bgTarget = new THREE.Color(0x0a0c10);
+function lerpFog(dt){
+  scene.fog.color.lerp(fogTarget.color, dt * 2);
+  scene.background.lerp(bgTarget, dt * 2);
+}
+
 
 
 
@@ -312,55 +418,147 @@ function buildRoom(room){
   const [w,d,h] = room.size;
   const wallCol = new THREE.Color(room.color);
 
-  // Floor with canvas texture
+  // Floor with canvas texture — reflective rooms get metalness
   const floorTex = room.theme==='Ancient'  ? floorTextures.sand  :
                    room.theme==='Mystical'  ? floorTextures.red   :
                    room.theme==='Modern'    ? floorTextures.dark  : floorTextures.marble;
-  const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(w, .2, d),
-    new THREE.MeshLambertMaterial({ map: floorTex })
-  );
+  const floorMat = room.theme==='Reflective'
+    ? new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.15, metalness: 0.4, color: wallCol })
+    : new THREE.MeshLambertMaterial({ map: floorTex });
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(w, .2, d), floorMat);
   floor.position.y = -.1;
   grp.add(floor);
 
   // Walls
   const wallMat = new THREE.MeshLambertMaterial({ color: wallCol });
-  [
-    [w, h, .3, 0, h*.5,  d*.5],
-    [w, h, .3, 0, h*.5, -d*.5],
-    [.3, h, d, w*.5, h*.5, 0],
-    [.3, h, d,-w*.5, h*.5, 0]
+  [[w, h, .3, 0, h*.5, d*.5],[w, h, .3, 0, h*.5, -d*.5],
+   [.3, h, d, w*.5, h*.5, 0],[.3, h, d,-w*.5, h*.5, 0]
   ].forEach(([sw,sh,sd,px,py,pz])=>{
     const m = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,sd), wallMat);
-    m.position.set(px,py,pz);
-    grp.add(m);
+    m.position.set(px,py,pz); grp.add(m);
   });
 
   // Ceiling
-  const ceil = new THREE.Mesh(
-    new THREE.BoxGeometry(w, .15, d),
-    new THREE.MeshLambertMaterial({ color: 0x0e0f12 })
-  );
-  ceil.position.y = h;
-  grp.add(ceil);
+  const ceil = new THREE.Mesh(new THREE.BoxGeometry(w, .15, d), new THREE.MeshLambertMaterial({ color: 0x0e0f12 }));
+  ceil.position.y = h; grp.add(ceil);
+
+  // Crown molding (decorative strip at wall-ceiling junction)
+  const moldMat = new THREE.MeshLambertMaterial({ color: 0x1a1816 });
+  [[w+.2,.12,.15,0,h-.06, d*.5],[w+.2,.12,.15,0,h-.06,-d*.5],
+   [.15,.12,d+.2,w*.5,h-.06,0],[.15,.12,d+.2,-w*.5,h-.06,0]
+  ].forEach(([sw,sh,sd,px,py,pz])=>{
+    const m = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,sd), moldMat);
+    m.position.set(px,py,pz); grp.add(m);
+  });
+
+  // Baseboard trim (dark strip at wall-floor junction)
+  const bbMat = new THREE.MeshLambertMaterial({ color: 0x0c0c0e });
+  [[w+.1,.08,.08,0,.04, d*.5],[w+.1,.08,.08,0,.04,-d*.5],
+   [.08,.08,d+.1,w*.5,.04,0],[.08,.08,d+.1,-w*.5,.04,0]
+  ].forEach(([sw,sh,sd,px,py,pz])=>{
+    const m = new THREE.Mesh(new THREE.BoxGeometry(sw,sh,sd), bbMat);
+    m.position.set(px,py,pz); grp.add(m);
+  });
 
   // Room accent light
   const theme = ROOM_THEMES[room.theme] || ROOM_THEMES.Default;
   const rl = new THREE.PointLight(theme.light, 2.0, 25, 1.8);
-  rl.position.set(0, h * .8, 0);
-  grp.add(rl);
+  rl.position.set(0, h * .8, 0); grp.add(rl);
 
-  // ── WALL PAINTINGS ────────────────────────────────────────────
-  // Hang a real photograph on the back wall of each room
-  const imgUrl = ROOM_IMAGES[room.id];
-  if(imgUrl){
-    const pw = Math.min(w * 0.5, 5);   // painting width
-    const ph = pw * 0.75;              // 4:3 ratio
-    const painting = createPainting(imgUrl, pw, ph);
-    painting.position.set(0, h * 0.5, -d/2 + 0.4);
-    grp.add(painting);
+  // God ray — subtle volumetric light cone from ceiling
+  const rayCone = new THREE.Mesh(
+    new THREE.ConeGeometry(2.5, h*0.8, 16, 1, true),
+    new THREE.MeshBasicMaterial({ color: theme.light, transparent: true, opacity: 0.04, side: THREE.DoubleSide })
+  );
+  rayCone.position.set(0, h*0.6, 0); rayCone.rotation.x = Math.PI; grp.add(rayCone);
+
+  // ── THEMED ARCHITECTURE ─────────────────────────────────────
+  if(room.theme === 'Ancient'){
+    const pMat = new THREE.MeshLambertMaterial({ color: 0x8a7a66 });
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>{
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(.25,.3,h,12), pMat);
+      col.position.set(sx*(w*.42), h/2, sz*(d*.42)); grp.add(col);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(.7,.15,.7), pMat);
+      cap.position.set(sx*(w*.42), h-0.08, sz*(d*.42)); grp.add(cap);
+    });
+    // Torch meshes on walls
+    const torchMat = new THREE.MeshLambertMaterial({ color: 0x3a2a1a });
+    const flameMat = new THREE.MeshBasicMaterial({ color: 0xff8830 });
+    for(const sx of [-1, 1]){
+      const torch = new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.6,8), torchMat);
+      torch.position.set(sx*(w*.44), h*0.5, d*.44); grp.add(torch);
+      const flame = new THREE.Mesh(new THREE.ConeGeometry(.12,.25,8), flameMat);
+      flame.position.set(sx*(w*.44), h*0.5+0.4, d*.44); grp.add(flame);
+      flame.userData.autoRotate = true; flame.userData.rotateSpeed = 3 + Math.random()*2;
+      autoRotateObjects.push(flame);
+    }
+  }
+  if(room.theme === 'Mystical'){
+    const cColors = [0xb88cff, 0xff6eb4, 0x6eb4ff, 0x8cffb8];
+    for(let i = 0; i < 8; i++){
+      const cm = new THREE.MeshBasicMaterial({ color: cColors[i%4], transparent: true, opacity: 0.6 });
+      const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(.08, 0), cm);
+      crystal.position.set((Math.random()-.5)*w*.7, 1+Math.random()*(h-2), (Math.random()-.5)*d*.7);
+      grp.add(crystal); crystal.userData.autoRotate = true; crystal.userData.rotateSpeed = 0.4+Math.random()*0.6;
+      autoRotateObjects.push(crystal);
+    }
+  }
+  if(room.theme === 'Modern'){
+    const stripMat = new THREE.MeshBasicMaterial({ color: 0x4080c0, transparent: true, opacity: 0.5 });
+    [[w*.98,.02,.02,0,h-.02,d*.48],[w*.98,.02,.02,0,h-.02,-d*.48],
+     [.02,.02,d*.98,w*.48,h-.02,0],[.02,.02,d*.98,-w*.48,h-.02,0]
+    ].forEach(([sw2,sh2,sd2,px2,py2,pz2])=>{
+      const s = new THREE.Mesh(new THREE.BoxGeometry(sw2,sh2,sd2), stripMat);
+      s.position.set(px2,py2,pz2); grp.add(s);
+    });
+    if(w > 12){
+      const glassMat = new THREE.MeshStandardMaterial({ color: 0x88aacc, transparent: true, opacity: 0.08, roughness: 0.05, metalness: 0.9 });
+      const pane = new THREE.Mesh(new THREE.BoxGeometry(.02, h*.7, d*.6), glassMat);
+      pane.position.set(0, h*.45, 0); grp.add(pane);
+    }
+  }
+  if(room.theme === 'Industrial'){
+    const beamMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>{
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(.15,.15,h), beamMat);
+      beam.rotation.x = Math.PI/2; beam.position.set(sx*(w*.44), h/2, sz*(d*.44)); grp.add(beam);
+    });
   }
 
+  // ── GRAND ENTRANCE SPECIAL ────────────────────────────────────
+  if(room.id === 'entrance'){
+    // Slowly rotating wireframe globe with monument dots
+    const globeGeo = new THREE.SphereGeometry(2.2, 24, 16);
+    const globeMat = new THREE.MeshBasicMaterial({ color: 0xdcb574, wireframe: true, transparent: true, opacity: 0.3 });
+    const globe = new THREE.Mesh(globeGeo, globeMat);
+    globe.position.set(0, 3.2, 0); grp.add(globe);
+    globe.userData.autoRotate = true; globe.userData.rotateSpeed = 0.06;
+    autoRotateObjects.push(globe);
+    // Golden dots on globe
+    const dotMat = new THREE.MeshBasicMaterial({ color: 0xffd700 });
+    for(let i = 0; i < 12; i++){
+      const phi = Math.acos(2*Math.random()-1), theta = Math.random()*Math.PI*2;
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(.05,8,8), dotMat);
+      dot.position.set(2.2*Math.sin(phi)*Math.cos(theta), 2.2*Math.cos(phi), 2.2*Math.sin(phi)*Math.sin(theta));
+      globe.add(dot);
+    }
+    // Flanking columns
+    const colMat = new THREE.MeshLambertMaterial({ color: 0xddd4c4 });
+    for(const sx of [-1,1]) for(const sz of [-1,1]){
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(.2,.25,h*.9,16), colMat);
+      col.position.set(sx*(w*.38), h*.45, sz*(d*.38)); grp.add(col);
+      const capG = new THREE.Mesh(new THREE.BoxGeometry(.55,.12,.55), colMat);
+      capG.position.set(sx*(w*.38), h*.9, sz*(d*.38)); grp.add(capG);
+    }
+  }
+
+  // ── WALL PAINTINGS ─────────────────────────────────────────────
+  const imgUrl = ROOM_IMAGES[room.id];
+  if(imgUrl){
+    const pw = Math.min(w * 0.5, 5), ph = pw * 0.75;
+    const painting = createPainting(imgUrl, pw, ph);
+    painting.position.set(0, h * 0.5, -d/2 + 0.4); grp.add(painting);
+  }
 
   // Pedestals + monument spawns
   const monuments = room.monuments || [];
@@ -368,33 +566,28 @@ function buildRoom(room){
     const ang = (i / Math.max(1, monuments.length)) * Math.PI*2;
     const r = Math.min(w,d)*.28;
     const px = Math.sin(ang)*r, pz = Math.cos(ang)*r;
+    const ped = new THREE.Group(); ped.position.set(px, 0, pz); grp.add(ped);
 
-    const ped = new THREE.Group();
-    ped.position.set(px, 0, pz);
-    grp.add(ped);
+    const pedBase = new THREE.Mesh(new THREE.CylinderGeometry(.35,.4,.95,16), new THREE.MeshLambertMaterial({ color:0x16161a }));
+    pedBase.position.y = .475;
+    ped.add(pedBase);
+    
+    const pedTop = new THREE.Mesh(new THREE.CylinderGeometry(.45,.45,.04,32), new THREE.MeshLambertMaterial({ color:0xeae4d8 }));
+    pedTop.position.y = .98;
+    ped.add(pedTop);
 
-    const pillar = new THREE.Mesh(
-      new THREE.CylinderGeometry(.35,.4,.95,16),
-      new THREE.MeshLambertMaterial({ color:0x16161a })
-    );
-    pillar.position.y = .475;
-    ped.add(pillar);
-
-    const top = new THREE.Mesh(
-      new THREE.CylinderGeometry(.45,.45,.04,32),
-      new THREE.MeshLambertMaterial({ color:0xeae4d8 })
-    );
-    top.position.y = .98;
-    ped.add(top);
-
-    // Glow ring
-    const glow = new THREE.Mesh(
-      new THREE.RingGeometry(.45,.55,32),
-      new THREE.MeshBasicMaterial({ color:theme.light, transparent:true, opacity:.6, side:THREE.DoubleSide })
-    );
-    glow.rotation.x = -Math.PI/2;
-    glow.position.y = 1.001;
+    // Animated pulsing glow ring
+    const glow = new THREE.Mesh(new THREE.RingGeometry(.45,.58,32), new THREE.MeshBasicMaterial({ color:theme.light, transparent:true, opacity:.6, side:THREE.DoubleSide }));
+    glow.rotation.x = -Math.PI/2; glow.position.y = 1.001;
+    glow.userData._glowPhase = Math.random() * Math.PI * 2;
     ped.add(glow);
+
+    // Spotlight cone per monument
+    const spotCone = new THREE.Mesh(
+      new THREE.ConeGeometry(.6, 2.5, 12, 1, true),
+      new THREE.MeshBasicMaterial({ color: theme.light, transparent: true, opacity: 0.03, side: THREE.DoubleSide })
+    );
+    spotCone.position.set(px, h - 1, pz); spotCone.rotation.x = Math.PI; grp.add(spotCone);
 
     // Monument
     const builder = MONUMENT_BUILDERS[monKey];
@@ -402,23 +595,16 @@ function buildRoom(room){
       const setupMonument = (object) => {
         const bbox = new THREE.Box3().setFromObject(object);
         const size = bbox.getSize(new THREE.Vector3());
-        
-        // If the group is empty (async model not loaded yet), don't scale it
         if(size.y < 0.001) return;
-
-        // scale to fit on pedestal (≈1.4m tall)
         const targetH = 1.4;
         const scale = targetH / Math.max(.001, size.y);
         object.scale.setScalar(scale);
         const center = bbox.getCenter(new THREE.Vector3()).multiplyScalar(scale);
         object.position.set(-center.x, 1.0 - bbox.min.y*scale, -center.z);
       };
-
       const monu = builder(setupMonument);
       setupMonument(monu);
-      
       ped.add(monu);
-
       monu.userData.monumentKey = monKey;
       monu.userData.autoRotate = true;
       monu.userData.rotateSpeed = .15 + Math.random()*.2;
@@ -427,41 +613,24 @@ function buildRoom(room){
     }
   });
 
-  // Room name plaque (above painting to avoid overlap)
+  // Room name plaque
   const plaque = makePlaque(room.name);
-  plaque.position.set(0, h*.88, -d*.5 + .25);
-  grp.add(plaque);
+  plaque.position.set(0, h*.88, -d*.5 + .25); grp.add(plaque);
 
-  // ── ARTIFACT DISPLAYS ───────────────────────────────────────────
-  // If this is the Shards Room, spawn the artifacts along the walls
+  // ── ARTIFACT DISPLAYS ─────────────────────────────────────────
   if (room.id === 'shards_room' && window.ARTIFACT_LIBRARY) {
-    const arts = window.ARTIFACT_LIBRARY;
-    arts.forEach((art, i) => {
-      // Position artifacts along the left and right walls
+    window.ARTIFACT_LIBRARY.forEach((art, i) => {
       const isLeft = i % 2 === 0;
       const wallX = isLeft ? -w*.4 : w*.4;
       const zPos = -d*.4 + Math.floor(i/2) * 2.5;
-      
-      const artPed = new THREE.Group();
-      artPed.position.set(wallX, 0, zPos);
-      grp.add(artPed);
-      
-      const pBase = new THREE.Mesh(new THREE.BoxGeometry(.8, 1.1, .8), new THREE.MeshLambertMaterial({ color:0x1a1a20 }));
-      pBase.position.y = 0.55;
-      artPed.add(pBase);
-      
-      // Floating glowing object representing the artifact
+      const artPed = new THREE.Group(); artPed.position.set(wallX, 0, zPos); grp.add(artPed);
+      const artBase = new THREE.Mesh(new THREE.BoxGeometry(.8, 1.1, .8), new THREE.MeshLambertMaterial({ color:0x1a1a20 }));
+      artBase.position.y = 0.55;
+      artPed.add(artBase);
       const meshColor = new THREE.Color(art.color);
-      const artMesh = new THREE.Mesh(
-        new THREE.OctahedronGeometry(.2, 1),
-        new THREE.MeshStandardMaterial({ color: meshColor, roughness: 0.2, metalness: 0.8, emissive: meshColor, emissiveIntensity: 0.2 })
-      );
-      artMesh.position.y = 1.35;
-      artPed.add(artMesh);
-      
-      artMesh.userData.monumentKey = art.id; // Map interaction to the artifact id
-      artMesh.userData.autoRotate = true;
-      artMesh.userData.rotateSpeed = 0.5;
+      const artMesh = new THREE.Mesh(new THREE.OctahedronGeometry(.2, 1), new THREE.MeshStandardMaterial({ color: meshColor, roughness: 0.2, metalness: 0.8, emissive: meshColor, emissiveIntensity: 0.2 }));
+      artMesh.position.y = 1.35; artPed.add(artMesh);
+      artMesh.userData.monumentKey = art.id; artMesh.userData.autoRotate = true; artMesh.userData.rotateSpeed = 0.5;
       autoRotateObjects.push(artMesh);
       PEDESTAL_INFO.push({ group:artMesh, monumentKey:art.id, position:new THREE.Vector3().copy(artPed.position).add(grp.position) });
     });
@@ -620,10 +789,26 @@ function onRoomEntered(room){
   document.getElementById('roomDesc').textContent = monumentList ? `Featuring: ${monumentList}` : 'A connecting hall.';
   refreshPathPicker(room);
 
-  // Theme transition
+  // Smooth fog transition (lerped in animation loop)
   const theme = ROOM_THEMES[room.theme] || ROOM_THEMES.Default;
-  scene.fog.color.setHex(theme.fog);
-  scene.background.setHex(theme.fog);
+  fogTarget.color.setHex(theme.fog);
+  bgTarget.setHex(theme.fog);
+
+  // Audio atmosphere transition
+  if(window.AudioAtmosphere) window.AudioAtmosphere.setTheme(room.theme);
+
+  // Progress tracking
+  const isNew = !visitedRooms.has(room.id);
+  visitedRooms.add(room.id);
+  (room.monuments||[]).forEach(m => discoveredMonuments.add(m));
+  updateProgress();
+  if(isNew && visitedRooms.size > 1) showToast(`✦ Discovered: ${room.name}`);
+  // Achievement: all rooms in a wing
+  const ancientRooms = ['colosseum_room','greece_room','roman_aqueduct','parthenon_inner'];
+  const indianRooms = ['indian_hall','taj_mahal_garden','konark_courtyard'];
+  if(isNew && ancientRooms.every(id => visitedRooms.has(id))) showToast('🏆 Achievement: Ancient Wing Complete!');
+  if(isNew && indianRooms.every(id => visitedRooms.has(id))) showToast('🏆 Achievement: Indian Heritage Wing Complete!');
+  if(visitedRooms.size === ROOMS.length) showToast('🎉 Congratulations! You explored the entire museum!');
 
   // Hidden treasury key drop
   if(room.id === 'shards_room' && !foundKey){
@@ -632,25 +817,15 @@ function onRoomEntered(room){
   }
 
   // ── LAZY-LOAD TAJ MAHAL ──────────────────────────────────────────────
-  // Only load the 40 MB GLB once, and only when the user is actually inside
-  // the Indian Hall. Loading it at page start crashes the WebGL context.
   if(room.id === 'indian_hall' && !tajMahalLoaded){
-    tajMahalLoaded = true;   // flag so we only do this once
-
-    // Load the real photogrammetry texture extracted from the GLB
+    tajMahalLoaded = true;
     const tajTex = textureLoader.load('images/taj_texture.jpg');
     const tajMat = new THREE.MeshLambertMaterial({ map: tajTex, color: 0xf4efe6 });
-
     showToast('Loading Taj Mahal 3D model… (please wait)');
     gltfLoader.load(
       'taj%20mahal%20files%20/source/model.glb',
       (gltf) => {
-        gltf.scene.traverse((child) => {
-          if(child.isMesh){
-            child.material = tajMat;  // real texture, safe shader
-          }
-        });
-        // Scale to fit in the room (target height 5 m)
+        gltf.scene.traverse((child) => { if(child.isMesh) child.material = tajMat; });
         const bbox = new THREE.Box3().setFromObject(gltf.scene);
         const sz   = bbox.getSize(new THREE.Vector3());
         if(sz.y > 0.001){
@@ -703,8 +878,13 @@ function pickPathByIndex(idx){
 }
 
 function teleportTo(room){
-  player.pos.set(room.pos[0], 1.7, room.pos[2] - room.size[1]/2 + 1.2);
-  player.vel.set(0,0,0);
+  const fade = document.getElementById('fadeOverlay');
+  fade.style.opacity = '1';
+  setTimeout(() => {
+    player.pos.set(room.pos[0], 1.7, room.pos[2] - room.size[1]/2 + 1.2);
+    player.vel.set(0,0,0);
+    setTimeout(() => { fade.style.opacity = '0'; }, 100);
+  }, 500);
   showToast(`→ ${room.name}`);
 }
 
@@ -785,9 +965,12 @@ function drawMap(){
   const minX = -50, maxX = 100, minZ = -10, maxZ = 120;
   const sx = W/(maxX-minX), sz = H/(maxZ-minZ);
 
-  // edges
-  mapCtx.strokeStyle = 'rgba(220,181,116,.4)';
-  mapCtx.lineWidth = 2;
+  // Theme color lookup
+  const themeColors = { Ancient:'#c88040', Modern:'#4080b0', Mystical:'#8040b0', Industrial:'#808080', Reflective:'#b0a060', Default:'#888888' };
+
+  // Edges
+  mapCtx.strokeStyle = 'rgba(220,181,116,.3)';
+  mapCtx.lineWidth = 1.5;
   EDGES.forEach(([_, a, b]) => {
     const ra = ROOMS.find(r=>r.id===a), rb = ROOMS.find(r=>r.id===b);
     if(!ra || !rb) return;
@@ -796,19 +979,52 @@ function drawMap(){
     mapCtx.lineTo((rb.pos[0]-minX)*sx, (rb.pos[2]-minZ)*sz);
     mapCtx.stroke();
   });
-  // rooms
+
+  // Rooms — theme-colored, visited rooms brighter
   ROOMS.forEach(r => {
     const isCur = r.id === currentRoomId;
-    mapCtx.fillStyle = isCur ? '#dcb574' : 'rgba(180,180,200,.6)';
-    mapCtx.beginPath();
-    mapCtx.arc((r.pos[0]-minX)*sx, (r.pos[2]-minZ)*sz, isCur?7:4, 0, Math.PI*2);
-    mapCtx.fill();
+    const isVisited = visitedRooms.has(r.id);
+    const rx = (r.pos[0]-minX)*sx, ry = (r.pos[2]-minZ)*sz;
+    const rad = isCur ? 8 : 5;
+
+    // Pulsing current room
+    if(isCur){
+      const pulse = 0.3 + Math.sin(performance.now()*0.004)*0.2;
+      mapCtx.fillStyle = `rgba(220,181,116,${pulse})`;
+      mapCtx.beginPath(); mapCtx.arc(rx, ry, 14, 0, Math.PI*2); mapCtx.fill();
+    }
+
+    mapCtx.fillStyle = isCur ? '#dcb574' : isVisited ? (themeColors[r.theme]||'#888') : 'rgba(100,100,120,.5)';
+    mapCtx.beginPath(); mapCtx.arc(rx, ry, rad, 0, Math.PI*2); mapCtx.fill();
+
+    // Monument dots inside rooms
+    if(r.monuments && r.monuments.length > 0){
+      mapCtx.fillStyle = 'rgba(255,215,0,.6)';
+      r.monuments.forEach((_m, mi) => {
+        const ma = mi * Math.PI*2 / r.monuments.length;
+        mapCtx.beginPath(); mapCtx.arc(rx + Math.cos(ma)*3, ry + Math.sin(ma)*3, 1.5, 0, Math.PI*2); mapCtx.fill();
+      });
+    }
+
+    // Room name label (only for current and adjacent)
+    if(isCur || isVisited){
+      mapCtx.fillStyle = isCur ? '#fff' : 'rgba(200,200,200,.5)';
+      mapCtx.font = isCur ? 'bold 16px sans-serif' : '12px sans-serif';
+      mapCtx.textAlign = 'center';
+      mapCtx.fillText(r.name.split(' ')[0], rx, ry - rad - 4);
+    }
   });
-  // player
+
+  // Player — directional arrow
+  const px = (player.pos.x-minX)*sx, py = (player.pos.z-minZ)*sz;
+  mapCtx.save();
+  mapCtx.translate(px, py);
+  mapCtx.rotate(-player.yaw + Math.PI);
   mapCtx.fillStyle = '#fff';
   mapCtx.beginPath();
-  mapCtx.arc((player.pos.x-minX)*sx, (player.pos.z-minZ)*sz, 3, 0, Math.PI*2);
-  mapCtx.fill();
+  mapCtx.moveTo(0, -6); mapCtx.lineTo(-3, 4); mapCtx.lineTo(3, 4);
+  mapCtx.closePath(); mapCtx.fill();
+  mapCtx.restore();
 }
 
 // =============================================================================
@@ -817,7 +1033,7 @@ function drawMap(){
 const clock = new THREE.Clock();
 
 function update(dt){
-  // Movement (zero-alloc using pre-pooled vectors)
+  // Movement
   const speed = (keys['ShiftLeft'] || keys['ShiftRight']) ? player.runSpeed : player.speed;
   _fwd.set(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
   _right.set(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
@@ -826,9 +1042,10 @@ function update(dt){
   if(keys['KeyS']) _move.sub(_fwd);
   if(keys['KeyD']) _move.add(_right);
   if(keys['KeyA']) _move.sub(_right);
-  if(_move.lengthSq() > 0) _move.normalize().multiplyScalar(speed * dt);
+  const isMoving = _move.lengthSq() > 0;
+  if(isMoving) _move.normalize().multiplyScalar(speed * dt);
 
-  // Slide against walls (X then Z)
+  // Slide against walls
   _nextX.copy(player.pos); _nextX.x += _move.x;
   if(!collides(_nextX)) player.pos.x = _nextX.x;
   _nextZ.copy(player.pos); _nextZ.z += _move.z;
@@ -845,9 +1062,29 @@ function update(dt){
   camera.rotation.y = player.yaw;
   camera.rotation.x = player.pitch;
 
-  // Rotate only monument objects (NOT full scene traverse)
+  // Auto-rotate monuments & themed objects
   for(let i = 0; i < autoRotateObjects.length; i++){
-    autoRotateObjects[i].rotation.y += autoRotateObjects[i].userData.rotateSpeed * dt;
+    const obj = autoRotateObjects[i];
+    if(obj.userData.autoRotate !== false) obj.rotation.y += obj.userData.rotateSpeed * dt;
+  }
+
+  // Pulsing glow rings on pedestals
+  const t = performance.now() * 0.003;
+  scene.traverse(child => {
+    if(child.userData._glowPhase !== undefined && child.material){
+      child.material.opacity = 0.4 + Math.sin(t + child.userData._glowPhase) * 0.25;
+    }
+  });
+
+  // Dust particles
+  updateDust(dt);
+
+  // Smooth fog lerp
+  lerpFog(dt);
+
+  // Footstep audio
+  if(isMoving && player.onGround && window.AudioAtmosphere){
+    window.AudioAtmosphere.playFootstep();
   }
 
   detectRoom();
@@ -888,10 +1125,12 @@ renderer.setAnimationLoop(()=>{
 // Intro screen + WebXR button
 // =============================================================================
 document.getElementById('startBtn').onclick = async () => {
+  // Initialize audio (requires user gesture for Web Audio API)
+  if(window.AudioAtmosphere){ window.AudioAtmosphere.init(); window.AudioAtmosphere.resume(); }
   document.getElementById('intro').style.opacity = '0';
   setTimeout(()=>{
     document.getElementById('intro').style.display = 'none';
-    ['hud','legend','crosshair'].forEach(id => document.getElementById(id).style.display='block');
+    ['hud','legend','crosshair','map'].forEach(id => document.getElementById(id).style.display='block');
     detectRoom();
     renderer.domElement.requestPointerLock();
   }, 800);
